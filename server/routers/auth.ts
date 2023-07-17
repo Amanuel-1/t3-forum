@@ -10,13 +10,13 @@ export const authRouter = router({
       email: z.string().email(),
       password: z.string()
     }))
-    .query(async ({ input, ctx }) => {
+    .mutation(async ({ input, ctx }) => {
       const { name, email, password } = input
       const existingUser = await ctx.prisma.user.findUnique({
         where: { email }
       })
 
-      if (existingUser) return "Sudah ada"
+      if (existingUser) return "Email yang dipake buat daftar udah ada!"
 
       const passwordHash = hashSync(password, genSaltSync(10))
 
@@ -26,8 +26,8 @@ export const authRouter = router({
         }
       })
 
-      if(!createdUser) return "Gagal Registrasi"
+      if(!createdUser) return "Registrasi yang barusan gagal bre"
 
-      return "Berhasil Registrasi"
+      return "Selamat lu udah jadi bagian dari kita!"
     })
 })
