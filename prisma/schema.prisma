@@ -28,9 +28,9 @@ model Post {
   id          String     @id @default(uuid())
   title       String     @db.VarChar(100)
   content     String     @db.VarChar(255)
-  user        User?      @relation(fields: [userId], references: [id])
+  user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String?
-  anonymous   Anonymous? @relation(fields: [anonymousId], references: [id])
+  anonymous   Anonymous? @relation(fields: [anonymousId], references: [id], onDelete: Cascade)
   anonymousId String?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
