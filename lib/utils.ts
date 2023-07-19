@@ -9,3 +9,15 @@ export function excludeFields<Model, Key extends keyof Model>(model: Model, keys
   // @ts-ignore
   return Object.fromEntries(Object.entries(model).filter(([key]) => !keys.includes(key)))
 }
+
+type TResponse = {
+  status: number,
+  message: string
+}
+
+export function apiResponse<Model>(response: TResponse, data?: Model) {
+  return {
+    ...response,
+    data
+  }
+}

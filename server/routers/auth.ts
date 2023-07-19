@@ -3,7 +3,7 @@ import { z } from "zod"
 import { procedure } from "../trpc"
 import { compareSync, genSaltSync, hashSync } from "bcrypt-ts"
 import jwt from 'jsonwebtoken'
-import { excludeFields } from "@/lib/utils"
+import { apiResponse, excludeFields } from "@/lib/utils"
 
 export const authRouter = router({
   register: procedure
@@ -18,7 +18,10 @@ export const authRouter = router({
         where: { email }
       })
 
-      if (existingUser) return "Email yang dipake buat daftar udah ada!"
+      if (existingUser) return apiResponse({
+        status: 403,
+        message: "Email yang dipake buat daftar udah ada!"
+      })
 
       const passwordHash = hashSync(password, genSaltSync(10))
 
@@ -28,9 +31,15 @@ export const authRouter = router({
         }
       })
 
-      if (!createdUser) return "Registrasi yang barusan gagal bre"
+      if (!createdUser) return apiResponse({
+        status: 400,
+        message: "Registrasi yang barusan gagal bre"
+      })
 
-      return "Selamat lu udah jadi bagian dari kita! Bentar..."
+      return apiResponse({
+        status: 201,
+        message: "Selamat lu udah jadi bagian dari kita! Menuju halaman utama..."
+      }, excludeFields(createdUser, ['password']))
     }),
   login: procedure
     .input(z.object({
@@ -45,16 +54,25 @@ export const authRouter = router({
         }
       })
 
-      if (!existingUser) return "Akun belum terdaftar"
+      if (!existingUser) return apiResponse({
+        status: 404,
+        message: "Akun belum terdaftar"
+      })
 
       const isValidPassword = compareSync(password, existingUser.password)
 
-      if (!isValidPassword) return "Email dan Password tidak cocok"
+      if (!isValidPassword) return apiResponse({
+        status: 403,
+        message: "Email dan Password tidak cocok"
+      })
 
       const token = jwt.sign(excludeFields(existingUser, ['password']), process.env.JWT_SECRET!, {
         expiresIn: 60 * 60 * 24
       })
 
-      return "Berhasil Login"
+      return apiResponse({
+        status: 200,
+        message: "Berhasil Login"
+      }, { token })
     })
 })
