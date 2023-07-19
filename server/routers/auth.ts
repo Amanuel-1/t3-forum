@@ -4,6 +4,7 @@ import { procedure } from "../trpc"
 import { compareSync, genSaltSync, hashSync } from "bcrypt-ts"
 import jwt from 'jsonwebtoken'
 import { apiResponse, excludeFields } from "@/lib/utils"
+import { set as setCookie } from 'js-cookie'
 
 export const authRouter = router({
   register: procedure
@@ -68,6 +69,10 @@ export const authRouter = router({
 
       const token = jwt.sign(excludeFields(existingUser, ['password']), process.env.JWT_SECRET!, {
         expiresIn: 60 * 60 * 24
+      })
+
+      setCookie('token', token, {
+        expires: 1
       })
 
       return apiResponse({

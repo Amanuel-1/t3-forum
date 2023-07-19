@@ -17,21 +17,13 @@ model User {
   Post     Post[]
 }
 
-model Anonymous {
-  id       String @id @default(uuid())
-  pin      Int    @unique @db.SmallInt()
-  password String @db.VarChar(255)
-  Post     Post[]
-}
-
 model Post {
-  id          String     @id @default(uuid())
-  title       String     @db.VarChar(100)
-  content     String     @db.VarChar(255)
-  user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String   @id @default(uuid())
+  title       String   @db.VarChar(100)
+  content     String   @db.VarChar(255)
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String?
-  anonymous   Anonymous? @relation(fields: [anonymousId], references: [id], onDelete: Cascade)
-  anonymousId String?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  isAnonymous Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

@@ -9,7 +9,7 @@ import { Separator } from '@/components/ui/separator'
 import { Loader2 } from 'lucide-react'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -41,6 +41,10 @@ const Login: NextPage = () => {
     form.reset()
   }
 
+  useEffect(() => {
+    if (data) console.log(data)
+  }, [data])
+
   return (
     <>
       <main className='bg-background flex justify-center items-center min-h-screen flex-col selection:bg-foreground selection:text-background'>
@@ -48,7 +52,7 @@ const Login: NextPage = () => {
           {activeAlert && (
             <Alert className='w-full'>
               <AlertTitle className='tracking-wide'>Notifikasi</AlertTitle>
-              <AlertDescription>{error ? error.message : data}</AlertDescription>
+              <AlertDescription>{error ? error.message : data?.message}</AlertDescription>
             </Alert>
           )}
 

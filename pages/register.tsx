@@ -1,5 +1,5 @@
 import { NextPage } from 'next'
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   Card,
   CardContent,
@@ -58,10 +58,19 @@ const Register: NextPage = () => {
 
   const submitHandler = (values: z.infer<typeof formSchema>) => {
     register(values)
-    if (!error) return setTimeout(() => {
-      router.push('/login')
-    }, 3000)
   }
+
+  useEffect(() => {
+    if (data?.status && data.status === 201) {
+      const timeout = setTimeout(() => {
+        router.push('/login')
+      }, 3000)
+
+      return () => {
+        clearTimeout(timeout)
+      }
+    }
+  }, [data, router])
 
   return (
     <>
@@ -70,7 +79,7 @@ const Register: NextPage = () => {
           {activeAlert && (
             <Alert className='w-full'>
               <AlertTitle>Notifikasi</AlertTitle>
-              <AlertDescription>{error ? error.message : data}</AlertDescription>
+              <AlertDescription>{error ? error.message : data?.message}</AlertDescription>
             </Alert>
           )}
 
