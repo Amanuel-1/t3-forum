@@ -7,11 +7,26 @@ import { trpc } from '@/utils/trpc'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Separator } from '@/components/ui/separator'
 import { Loader2 } from 'lucide-react'
-import { NextPage } from 'next'
+import { GetServerSideProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { getCookies } from 'cookies-next'
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const cookies = getCookies({
+    req: ctx.req,
+    res: ctx.res
+  })
+
+  console.log(cookies)
+  return {
+    props: {
+
+    }
+  }
+}
 
 const formSchema = z.object({
   email: z.string().email({

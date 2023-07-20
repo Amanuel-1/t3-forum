@@ -4,7 +4,7 @@ import { procedure } from "../trpc"
 import { compareSync, genSaltSync, hashSync } from "bcrypt-ts"
 import jwt from 'jsonwebtoken'
 import { apiResponse, excludeFields } from "@/lib/utils"
-import { set as setCookie } from 'js-cookie'
+import { getBaseUrl } from "@/utils/trpc"
 
 export const authRouter = router({
   register: procedure
@@ -71,8 +71,14 @@ export const authRouter = router({
         expiresIn: 60 * 60 * 24
       })
 
-      setCookie('token', token, {
-        expires: 1
+      const setAuthToken = await fetch(`${getBaseUrl()}/api/cookie/set`, {
+        method: 'POST',
+        body: JSON.stringify({ token })
+      })
+
+      if(!setAuthToken.ok) return apiResponse({
+        status: 400,
+        message: "Gagal Login, Jaringan lu error kali bre!"
       })
 
       return apiResponse({
