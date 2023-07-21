@@ -71,19 +71,9 @@ export const authRouter = router({
         expiresIn: 60 * 60 * 24
       })
 
-      const setAuthToken = await fetch(`${getBaseUrl()}/api/cookie/set`, {
-        method: 'POST',
-        body: JSON.stringify({ token })
-      })
-
-      if(!setAuthToken.ok) return apiResponse({
-        status: 400,
-        message: "Gagal Login, Jaringan lu error kali bre!"
-      })
-
       return apiResponse({
         status: 200,
-        message: "Berhasil Login"
+        message: "Sip bang, Selamat berdiskusi!"
       }, { token })
     })
 })

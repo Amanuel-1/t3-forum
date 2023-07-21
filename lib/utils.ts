@@ -15,7 +15,7 @@ type TResponse = {
   message: string
 }
 
-export function apiResponse<Model>(response: TResponse, data?: Model) {
+export function apiResponse<T = void>(response: TResponse, data?: T) {
   return {
     ...response,
     data

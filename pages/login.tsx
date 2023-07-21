@@ -7,26 +7,12 @@ import { trpc } from '@/utils/trpc'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Separator } from '@/components/ui/separator'
 import { Loader2 } from 'lucide-react'
-import { GetServerSideProps, NextPage } from 'next'
+import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { getCookies } from 'cookies-next'
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const cookies = getCookies({
-    req: ctx.req,
-    res: ctx.res
-  })
-
-  console.log(cookies)
-  return {
-    props: {
-
-    }
-  }
-}
+import Head from 'next/head'
 
 const formSchema = z.object({
   email: z.string().email({
@@ -39,9 +25,9 @@ const formSchema = z.object({
 
 const Login: NextPage = () => {
   const router = useRouter()
-  const { isLoading, mutate: login, error, data } = trpc.auth.login.useMutation()
+  const { isLoading, mutate: login, error, data: response } = trpc.auth.login.useMutation()
 
-  const activeAlert = data || error
+  const activeAlert = response || error
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,22 +38,36 @@ const Login: NextPage = () => {
   })
 
   const submitHandler = (values: z.infer<typeof formSchema>) => {
-    login(values)
+    login(values, {
+      onSuccess: async ({ data, status }) => {
+        if (status === 200) {
+          const token = data?.token
+          const setAuthToken = await fetch('/api/cookie/set', {
+            method: 'POST',
+            body: JSON.stringify({ token })
+          })
+
+          if (!setAuthToken.ok) return
+
+          router.push('/forum')
+        }
+      }
+    })
+
     form.reset()
   }
 
-  useEffect(() => {
-    if (data) console.log(data)
-  }, [data])
-
   return (
     <>
+      <Head>
+        <title>Login</title>
+      </Head>
       <main className='bg-background flex justify-center items-center min-h-screen flex-col selection:bg-foreground selection:text-background'>
         <div className='w-10/12 md:w-max'>
           {activeAlert && (
             <Alert className='w-full'>
               <AlertTitle className='tracking-wide'>Notifikasi</AlertTitle>
-              <AlertDescription>{error ? error.message : data?.message}</AlertDescription>
+              <AlertDescription>{error ? error.message : response?.message}</AlertDescription>
             </Alert>
           )}
 
