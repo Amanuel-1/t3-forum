@@ -23,8 +23,6 @@ export default async function middleware(req: NextRequest) {
     .then(decoded => decoded.payload)
     .catch(err => null)
 
-  console.log(payload)
-
   if (!payload) {
     if (guest) return NextResponse.next()
 

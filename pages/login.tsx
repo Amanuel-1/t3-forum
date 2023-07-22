@@ -15,9 +15,9 @@ import { z } from 'zod'
 import Head from 'next/head'
 
 const formSchema = z.object({
-  email: z.string().email({
-    message: "Email lu gk valid"
-  }),
+  username: z.string().min(3, {
+    message: "Username lu kependekan min(3)"
+  }).trim().toLowerCase(),
   password: z.string().min(8, {
     message: "Password lu kependekan bre min(8)"
   })
@@ -32,7 +32,7 @@ const Login: NextPage = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: ""
     }
   })
@@ -67,7 +67,7 @@ const Login: NextPage = () => {
           {activeAlert && (
             <Alert className='w-full'>
               <AlertTitle className='tracking-wide'>Notifikasi</AlertTitle>
-              <AlertDescription>{error ? error.message : response?.message}</AlertDescription>
+              <AlertDescription>{error ? error.message.split(' ').slice(0, 5).join(' ') : response?.message}</AlertDescription>
             </Alert>
           )}
 
@@ -89,12 +89,12 @@ const Login: NextPage = () => {
 
                   <FormField
                     control={form.control}
-                    name="email"
+                    name="username"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>Username</FormLabel>
                         <FormControl>
-                          <Input placeholder="*@gmail.com" type='email' autoComplete='off' {...field} />
+                          <Input placeholder="Huruf kecil semua" type='text' autoComplete='off' {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

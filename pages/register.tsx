@@ -28,8 +28,8 @@ import { trpc } from '@/utils/trpc'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 const formSchema = z.object({
-  email: z.string().email({
-    message: "Email harus Valid bre",
+  username: z.string().min(3, {
+    message: "Username lu kependekan min(3)",
   }),
   name: z.string().max(20, {
     message: "Nama lu panjang amat bre max(20)"
@@ -51,7 +51,7 @@ const Register: NextPage = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      email: "",
+      username: "",
       password: ""
     }
   })
@@ -79,7 +79,7 @@ const Register: NextPage = () => {
           {activeAlert && (
             <Alert className='w-full'>
               <AlertTitle>Notifikasi</AlertTitle>
-              <AlertDescription>{error ? error.message : data?.message}</AlertDescription>
+              <AlertDescription>{error ? error.message.split(' ').slice(0, 5).join(' ') : data?.message}</AlertDescription>
             </Alert>
           )}
 
@@ -101,12 +101,12 @@ const Register: NextPage = () => {
 
                   <FormField
                     control={form.control}
-                    name="email"
+                    name="username"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>Username</FormLabel>
                         <FormControl>
-                          <Input placeholder="*@gmail.com" type='email' autoComplete='off' {...field} />
+                          <Input placeholder="Huruf kecil semua" type='text' autoComplete='off' {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

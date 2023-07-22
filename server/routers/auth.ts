@@ -10,25 +10,29 @@ export const authRouter = router({
   register: procedure
     .input(z.object({
       name: z.string(),
-      email: z.string().email(),
+      username: z.string().min(3).trim().toLowerCase(),
       password: z.string()
     }))
     .mutation(async ({ input, ctx }) => {
-      const { name, email, password } = input
+      let { name, username, password } = input
+      username = username.split(' ').join('')
+
       const existingUser = await ctx.prisma.user.findUnique({
-        where: { email }
+        where: {
+          username
+        }
       })
 
       if (existingUser) return apiResponse({
         status: 403,
-        message: "Email yang dipake buat daftar udah ada!"
+        message: "Username yang dipake buat daftar udah ada!"
       })
 
       const passwordHash = hashSync(password, genSaltSync(10))
 
       const createdUser = await ctx.prisma.user.create({
         data: {
-          name, email, password: passwordHash
+          name, username, password: passwordHash
         }
       })
 
@@ -44,14 +48,16 @@ export const authRouter = router({
     }),
   login: procedure
     .input(z.object({
-      email: z.string().email(),
+      username: z.string().min(3).trim().toLowerCase(),
       password: z.string()
     }))
     .mutation(async ({ input, ctx }) => {
-      const { email, password } = input
+      let { username, password } = input
+      username = username.split(' ').join('')
+
       const existingUser = await ctx.prisma.user.findUnique({
         where: {
-          email
+          username,
         }
       })
 
@@ -64,7 +70,7 @@ export const authRouter = router({
 
       if (!isValidPassword) return apiResponse({
         status: 403,
-        message: "Email dan Password tidak cocok"
+        message: "Username dan Password tidak cocok"
       })
 
       const token = await new SignJWT(excludeFields(existingUser, ['password']))
