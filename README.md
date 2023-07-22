@@ -2,6 +2,8 @@
 - Use array matcher in middleware to make cookies work
 
 # Todo 
-- [ ] Halaman utama (forum)
-- [ ] Logout
+- [x] Halaman utama (forum)
+- [x] Logout
 - [ ] Halaman Profil
+- [ ] Crud Post
+- [ ] Edit Profil
