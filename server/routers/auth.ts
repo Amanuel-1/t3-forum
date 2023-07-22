@@ -2,9 +2,9 @@ import { router } from "@/server/trpc"
 import { z } from "zod"
 import { procedure } from "../trpc"
 import { compareSync, genSaltSync, hashSync } from "bcrypt-ts"
-import jwt from 'jsonwebtoken'
-import { apiResponse, excludeFields } from "@/lib/utils"
-import { getBaseUrl } from "@/utils/trpc"
+import { SignJWT } from "jose"
+import { nanoid } from "nanoid"
+import { apiResponse, excludeFields, getJwtSecret } from "@/lib/utils"
 
 export const authRouter = router({
   register: procedure
@@ -67,9 +67,12 @@ export const authRouter = router({
         message: "Email dan Password tidak cocok"
       })
 
-      const token = jwt.sign(excludeFields(existingUser, ['password']), process.env.JWT_SECRET!, {
-        expiresIn: 60 * 60 * 24
-      })
+      const token = await new SignJWT(excludeFields(existingUser, ['password']))
+        .setProtectedHeader({ alg: 'HS256' })
+        .setJti(nanoid())
+        .setIssuedAt()
+        .setExpirationTime('2h')
+        .sign(new TextEncoder().encode(getJwtSecret()))
 
       return apiResponse({
         status: 200,

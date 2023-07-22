@@ -7,5 +7,5 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     req, res
   })
 
-  return res.status(200).end()
+  res.status(200).end()
 }
