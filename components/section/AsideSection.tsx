@@ -35,7 +35,7 @@ const AsideSection: React.FC<TProps> = ({ setOpenMenu, openMenu, user }) => {
       lg:border-secondary lg:px-0 lg:bg-transparent lg:translate-y-0
       h-screen
 
-      fixed inset-0 z-20 px-4 bg-secondary ${openMenu ? 'translate-y-0' : 'translate-y-full'}
+      fixed inset-0 z-20 px-4 bg-secondary ${openMenu ? 'translate-y-0' : 'translate-y-[200%]'}
       transition-all
     `}>
       <div>

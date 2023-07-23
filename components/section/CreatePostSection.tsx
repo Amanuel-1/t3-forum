@@ -51,7 +51,7 @@ const CreatePostSection: React.FC<TProps> = ({ openCreatePostInput, setOpenCreat
   }, [openCreatePostInput])
 
   return (
-    <div className={`fixed inset-0 z-20 transition-all bg-secondary/40 backdrop-blur-md flex flex-col justify-center items-center ${openCreatePostInput ? 'translate-y-0' : 'translate-y-full'}`}>
+    <div className={`fixed inset-0 z-20 transition-all bg-secondary/40 backdrop-blur-md flex flex-col justify-center items-center ${openCreatePostInput ? 'translate-y-0' : 'translate-y-[200%]'}`}>
       <div className='w-10/12 lg:w-max space-y-4'>
         {activeAlert && (
           <Alert>
