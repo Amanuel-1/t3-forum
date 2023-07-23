@@ -1,13 +1,14 @@
 import { getAuthUser } from '@/lib/utils'
 import { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import AsideSection from '@/components/section/AsideSection'
 import Navbar from '@/components/reusable/global/Navbar'
 import AsideToggle from '@/components/reusable/global/AsideToggle'
 import { Input } from '@/components/ui/input'
 import CreatePostSection from '@/components/section/CreatePostSection'
 import CardForum from '@/components/reusable/forum/CardForum'
+import { trpc } from '@/utils/trpc'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const user = await getAuthUser(ctx.req.cookies?.token!)
@@ -40,6 +41,12 @@ const Forum: NextPage<TProps> = ({ user }) => {
   const [openMenu, setOpenMenu] = useState(false)
   const [openCreatePostInput, setOpenCreatePostInput] = useState(false)
 
+  const posts = trpc.post.all.useQuery()
+
+  useEffect(() => {
+    if(!openCreatePostInput) posts.refetch()
+  }, [openCreatePostInput, posts])
+
   return (
     <>
       <Head>
@@ -68,10 +75,12 @@ const Forum: NextPage<TProps> = ({ user }) => {
             </div>
 
 
-            <ul className='py-4 container'>
-              <li>
-                <CardForum />
-              </li>
+            <ul className='py-4 space-y-4 container'>
+              {posts.data?.data?.map((post, idx) => (
+                <li key={idx}>
+                  <CardForum {...post} />
+                </li>
+              ))}
             </ul>
 
           </main>

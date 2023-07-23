@@ -6,7 +6,11 @@ import { deleteCookie } from "cookies-next"
 
 export default async function middleware(req: NextRequest) {
 
-  const guest = req.nextUrl.pathname.startsWith('/login') || req.nextUrl.pathname.startsWith('/register')
+  const guest = 
+    req.nextUrl.pathname.startsWith('/login') || 
+    req.nextUrl.pathname.startsWith('/register') ||
+    req.nextUrl.pathname.startsWith('/api/trpc/auth.login') ||
+    req.nextUrl.pathname.startsWith('/api/trpc/auth.register')
 
   if (req.nextUrl.pathname.startsWith('/test')) return NextResponse.next()
 
@@ -39,5 +43,5 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/login", "/test", "/forum", "/register"]
+  matcher: ["/login", "/test", "/forum", "/register", "/api/trpc/:path*"]
 }

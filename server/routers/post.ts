@@ -5,11 +5,6 @@ import { z } from 'zod'
 export const postRouter = router({
   all: procedure
     .query(async ({ ctx }) => {
-      if (!ctx.user) return apiResponse({
-        status: 401,
-        message: 'Lu belom login!'
-      }, ctx)
-
       const posts = await ctx.prisma.post.findMany({
         select: {
           id: true,
@@ -23,6 +18,9 @@ export const postRouter = router({
             }
           },
         },
+        orderBy: {
+          createdAt: 'desc'
+        }
       })
 
       if (!posts.length) return apiResponse({
@@ -33,7 +31,7 @@ export const postRouter = router({
       return apiResponse({
         status: 200,
         message: 'Semua postingan'
-      })
+      }, posts)
     }),
   store: procedure
     .input(z.object({
@@ -41,12 +39,6 @@ export const postRouter = router({
       userId: z.string(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const authUser = await ctx.user
-      if (!authUser) return apiResponse({
-        status: 401,
-        message: 'Lu belom login!'
-      }, ctx)
-
       const { content, userId } = input
       const createdPost = await ctx.prisma.post.create({
         data: {

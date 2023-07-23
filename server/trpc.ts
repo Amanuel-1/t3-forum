@@ -1,19 +1,10 @@
-import { getAuthUser } from '@/lib/utils';
 import { prisma } from '@/prisma/db'
 import { initTRPC, inferAsyncReturnType } from '@trpc/server'
 import { CreateNextContextOptions } from '@trpc/server/adapters/next'
 
 export const createContext = async (opts: CreateNextContextOptions) => {
-  const { token } = opts.req.cookies
-
-  let user = null
-  if (token) {
-    user = await getAuthUser(token)
-  }
-
   return {
     prisma,
-    user
   };
 };
 

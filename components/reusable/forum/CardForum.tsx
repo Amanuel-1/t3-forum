@@ -6,9 +6,18 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { AlertOctagon, Forward, MessagesSquare } from 'lucide-react'
 import React from 'react'
 
-type TProps = {}
+type TProps = {
+  id: string,
+  content: string,
+  createdAt: string,
+  user: {
+    name: string;
+    username: string;
+    id: string;
+  } | null
+}
 
-const CardForum: React.FC<TProps> = () => {
+const CardForum: React.FC<TProps> = ({ id, content, user, createdAt }) => {
   return (
     <Card>
       <CardHeader className='px-4 py-2'>
@@ -20,15 +29,15 @@ const CardForum: React.FC<TProps> = () => {
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div>
-            <p className='font-bold text-base'>Adi Cahya Saputra</p>
-            <p className='text-foreground/60 text-base'>adicss</p>
+            <p className='font-bold text-base'>{user ? user.name : 'Anonymous'}</p>
+            <p className='text-foreground/60 text-base'>{user ? user.username : 'anonim'}</p>
           </div>
 
         </CardTitle>
 
       </CardHeader>
       <CardContent className='px-4 py-2'>
-        <p>Halo Bre, Aplikasi ini masih beta, jangan banyak ngarep dah lu.</p>
+        <p>{content}</p>
       </CardContent>
       <Separator />
       <CardFooter className='p-2 space-x-2'>

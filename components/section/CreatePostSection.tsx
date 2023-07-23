@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Textarea } from '../ui/textarea'
 import { Separator } from '../ui/separator'
 import { Button } from '../ui/button'
@@ -31,15 +31,24 @@ const CreatePostSection: React.FC<TProps> = ({ openCreatePostInput, setOpenCreat
   })
 
   const { isLoading, mutate: createPost, error, data } = trpc.post.store.useMutation()
-  const activeAlert = data || error
+  const [activeAlert, setActiveAlert] = useState(false)
 
   function submitHandler(values: z.infer<typeof formSchema>) {
     createPost(values, {
       onSuccess: (data) => {
-        console.log(data.data)
+        setActiveAlert(true)
+      },
+      onError: (error) => {
+        setActiveAlert(true)
       }
     })
+
+    form.reset()
   }
+
+  useEffect(() => {
+    if (!openCreatePostInput) setActiveAlert(false)
+  }, [openCreatePostInput])
 
   return (
     <div className={`fixed inset-0 z-20 transition-all bg-secondary/40 backdrop-blur-md flex flex-col justify-center items-center ${openCreatePostInput ? 'translate-y-0' : 'translate-y-full'}`}>
@@ -65,31 +74,40 @@ const CreatePostSection: React.FC<TProps> = ({ openCreatePostInput, setOpenCreat
           <div className="grid w-full gap-1.5">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(submitHandler)} className="space-y-8">
-                <FormField
-                  control={form.control}
-                  name="content"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Textarea placeholder="Tulis isi postingan disini" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                {!activeAlert && (
+                  <FormField
+                    control={form.control}
+                    name="content"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Textarea placeholder="Tulis isi postingan disini" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+                {activeAlert
+                  ? (
+                    <Button type='button' onClick={() => setOpenCreatePostInput(false)} variant='outline'>
+                      Tutup Menu
+                    </Button>
+                  ) : (
+                    <div className='space-x-2 mt-4'>
+                      <Button type='submit' disabled={isLoading}>
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Tunggu Bre
+                          </>
+                        ) : "Buat Postingan"}
+                      </Button>
+                      <Button type='button' variant='outline' onClick={() => setOpenCreatePostInput(false)}>
+                        Gak Jadi Deh
+                      </Button>
+                    </div>
                   )}
-                />
-                <div className='space-x-2 mt-4'>
-                  <Button type='submit' disabled={isLoading}>
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Tunggu Bre
-                      </>
-                    ) : "Buat Postingan"}
-                  </Button>
-                  <Button type='button' variant='outline' onClick={() => setOpenCreatePostInput(false)}>
-                    Gak Jadi Deh
-                  </Button>
-                </div>
               </form>
             </Form>
           </div>
