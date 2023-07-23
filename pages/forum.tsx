@@ -7,9 +7,19 @@ import Navbar from '@/components/reusable/global/Navbar'
 import AsideToggle from '@/components/reusable/global/AsideToggle'
 import { Input } from '@/components/ui/input'
 import CreatePostSection from '@/components/section/CreatePostSection'
+import CardForum from '@/components/reusable/forum/CardForum'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const user = await getAuthUser(ctx.req.cookies?.token!)
+
+  if (!user) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false
+      }
+    }
+  }
 
   return {
     props: {
@@ -20,6 +30,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
 type TProps = {
   user: {
+    id: string,
     username: string,
     name: string,
   }
@@ -36,7 +47,7 @@ const Forum: NextPage<TProps> = ({ user }) => {
       </Head>
       <div className='bg-background text-foreground selection:bg-foreground selection:text-background'>
 
-        <Navbar />
+        <Navbar username={user.username} />
 
         <div className='flex relative items-start lg:container'>
 
@@ -44,8 +55,9 @@ const Forum: NextPage<TProps> = ({ user }) => {
 
           <main className='relative lg:w-10/12 w-full h-[2000px]'>
             <AsideToggle setOpenMenu={setOpenMenu} />
+            <CreatePostSection userId={user.id} openCreatePostInput={openCreatePostInput} setOpenCreatePostInput={setOpenCreatePostInput} />
 
-            <div className='sticky top-0 py-4 container bg-secondary/50 backdrop-blur-md border-b'>
+            <div className='sticky z-10 top-0 py-4 container bg-white/50 backdrop-blur-md border-b'>
               <div className='flex items-start justify-between gap-4'>
                 <Input
                   type='text'
@@ -55,11 +67,11 @@ const Forum: NextPage<TProps> = ({ user }) => {
               </div>
             </div>
 
-            <CreatePostSection openCreatePostInput={openCreatePostInput} setOpenCreatePostInput={setOpenCreatePostInput} />
 
             <ul className='py-4 container'>
-              <li>Post 1</li>
-              <li>Post 2</li>
+              <li>
+                <CardForum />
+              </li>
             </ul>
 
           </main>

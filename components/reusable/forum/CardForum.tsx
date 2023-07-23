@@ -1,0 +1,80 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { AlertOctagon, Forward, MessagesSquare } from 'lucide-react'
+import React from 'react'
+
+type TProps = {}
+
+const CardForum: React.FC<TProps> = () => {
+  return (
+    <Card>
+      <CardHeader className='px-4 py-2'>
+
+        <CardTitle className='flex items-center gap-4'>
+
+          <Avatar>
+            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
+          <div>
+            <p className='font-bold text-base'>Adi Cahya Saputra</p>
+            <p className='text-foreground/60 text-base'>adicss</p>
+          </div>
+
+        </CardTitle>
+
+      </CardHeader>
+      <CardContent className='px-4 py-2'>
+        <p>Halo Bre, Aplikasi ini masih beta, jangan banyak ngarep dah lu.</p>
+      </CardContent>
+      <Separator />
+      <CardFooter className='p-2 space-x-2'>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant='outline'>
+                <MessagesSquare className='w-5 aspect-square' />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Komentar</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant='outline'>
+                <Forward className='w-5 aspect-square' />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Bagikan</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant='destructive'>
+                <AlertOctagon className='w-5 aspect-square' />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Lapor Pedo</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+      </CardFooter>
+    </Card>
+  )
+}
+
+export default CardForum

@@ -1,3 +1,4 @@
+import { User } from "@prisma/client"
 import { type ClassValue, clsx } from "clsx"
 import { getCookie } from "cookies-next"
 import { jwtVerify } from "jose"
@@ -36,13 +37,18 @@ export function getJwtSecret(): string {
 
 export const getAuthUser = async (token: string) => {
   const payload = await jwtVerify(token, new TextEncoder().encode(getJwtSecret()))
-    .then(decoded => decoded.payload)
+    .then(decoded => decoded.payload as User)
     .catch(err => null)
 
-  return {
-    username: payload?.username,
-    name: payload?.name,
-    image: payload?.image,
-    bio: payload?.bio
+  if (payload) {
+    return {
+      id: payload.id,
+      username: payload.username,
+      name: payload.name,
+      image: payload.image,
+      bio: payload.bio
+    }
   }
+
+  return null
 }

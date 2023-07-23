@@ -1,8 +1,16 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { useRouter } from 'next/router'
 import React from 'react'
 
-const Navbar: React.FC = () => {
+type TProps = {
+  username: string
+}
+
+const Navbar: React.FC<TProps> = ({ username }) => {
+  const router = useRouter()
+
   return (
     <nav className='py-4 border-b-2 border-secondary'>
 
@@ -11,10 +19,19 @@ const Navbar: React.FC = () => {
           <h1 className='text-2xl font-bold'>Forum<span className='text-red-600'>Gw</span></h1>
           <Badge>Beta</Badge>
         </div>
-        <Avatar>
-          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <Avatar onClick={() => router.push('/profil/' + username)} className='cursor-pointer'>
+                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Lihat Profil</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
     </nav>
