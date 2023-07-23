@@ -1,7 +1,7 @@
 import { getAuthUser } from '@/lib/utils'
 import { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import AsideSection from '@/components/section/AsideSection'
 import Navbar from '@/components/reusable/global/Navbar'
 import AsideToggle from '@/components/reusable/global/AsideToggle'
@@ -28,10 +28,6 @@ type TProps = {
 const Forum: NextPage<TProps> = ({ user }) => {
   const [openMenu, setOpenMenu] = useState(false)
   const [openCreatePostInput, setOpenCreatePostInput] = useState(false)
-
-  useEffect(() => {
-    console.log(openCreatePostInput)
-  }, [openCreatePostInput])
 
   return (
     <>
