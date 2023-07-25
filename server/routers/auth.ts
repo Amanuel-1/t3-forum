@@ -43,7 +43,7 @@ export const authRouter = router({
 
       return apiResponse({
         status: 201,
-        message: "Selamat lu udah jadi bagian dari kita! Menuju halaman utama..."
+        message: "Selamat lu udah jadi bagian dari kita!"
       }, excludeFields(createdUser, ['password']))
     }),
   login: procedure

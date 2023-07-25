@@ -5,5 +5,6 @@
 - [x] Halaman utama (forum)
 - [x] Logout
 - [ ] Halaman Profil
+- [ ] Event route change (redirect feedback for UX)
 - [ ] Crud Post
 - [ ] Edit Profil

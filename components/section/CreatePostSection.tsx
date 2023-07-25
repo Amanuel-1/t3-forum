@@ -47,8 +47,9 @@ const CreatePostSection: React.FC<TProps> = ({ openCreatePostInput, setOpenCreat
   }
 
   useEffect(() => {
+    if(openCreatePostInput) form.setFocus('content')
     if (!openCreatePostInput) setActiveAlert(false)
-  }, [openCreatePostInput])
+  }, [openCreatePostInput, form])
 
   return (
     <div className={`fixed inset-0 z-20 transition-all bg-secondary/40 backdrop-blur-md flex flex-col justify-center items-center ${openCreatePostInput ? 'translate-y-0' : 'translate-y-[200%]'}`}>
