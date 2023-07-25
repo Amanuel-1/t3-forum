@@ -8,21 +8,31 @@ generator client {
 }
 
 model User {
-  id       String  @id @default(uuid())
-  username String  @unique
-  name     String  @db.VarChar(20)
-  image    String?
-  bio      String? @db.VarChar(100)
-  password String  @db.VarChar(255)
+  id        String     @id @default(uuid())
+  username  String     @unique
+  name      String     @db.VarChar(20)
+  image     String?
+  bio       String?    @db.VarChar(100)
+  password  String     @db.VarChar(255)
+  Post      Post[]
+  Anonymous Anonymous?
+}
+
+model Anonymous {
+  id       String @id @default(uuid())
+  userId   String @unique
+  user     User   @relation(fields: [userId], references: [id])
+  username String
   Post     Post[]
 }
 
 model Post {
-  id          String   @id @default(uuid())
-  content     String   @db.VarChar(255)
-  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String     @id @default(uuid())
+  content     String     @db.VarChar(255)
+  user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String?
-  isAnonymous Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  anonymousId String?
+  Anonymous   Anonymous? @relation(fields: [anonymousId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
