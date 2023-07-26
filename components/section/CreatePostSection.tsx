@@ -9,9 +9,11 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '../ui/form'
 import { trpc } from '@/utils/trpc'
 import { Loader2 } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
 
 type TProps = {
   userId: string,
+  isAnonymPost: boolean
   openCreatePostInput: boolean,
   setOpenCreatePostInput: (value: React.SetStateAction<boolean>) => void
 }
@@ -21,7 +23,7 @@ const formSchema = z.object({
   userId: z.string(),
 })
 
-const CreatePostSection: React.FC<TProps> = ({ openCreatePostInput, setOpenCreatePostInput, userId }) => {
+const CreatePostSection: React.FC<TProps> = ({ openCreatePostInput, setOpenCreatePostInput, userId, isAnonymPost }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -34,7 +36,10 @@ const CreatePostSection: React.FC<TProps> = ({ openCreatePostInput, setOpenCreat
   const [activeAlert, setActiveAlert] = useState(false)
 
   function submitHandler(values: z.infer<typeof formSchema>) {
-    createPost(values, {
+    createPost({
+      ...values,
+      isAnonymPost
+    }, {
       onSuccess: (data) => {
         setActiveAlert(true)
       },
@@ -47,7 +52,7 @@ const CreatePostSection: React.FC<TProps> = ({ openCreatePostInput, setOpenCreat
   }
 
   useEffect(() => {
-    if(openCreatePostInput) form.setFocus('content')
+    if (openCreatePostInput) form.setFocus('content')
     if (!openCreatePostInput) setActiveAlert(false)
   }, [openCreatePostInput, form])
 
@@ -69,6 +74,17 @@ const CreatePostSection: React.FC<TProps> = ({ openCreatePostInput, setOpenCreat
             <span>Buat Postingan</span>
             <span className='text-md'>🚀</span>
           </h1>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <p className='p-2 bg-secondary w-max text-sm mt-2 font-bold rounded-md'>{isAnonymPost ? 'Secara Anonym' : 'Secara Public'}</p>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Ubah dari menu</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
           <Separator className='my-4' />
 

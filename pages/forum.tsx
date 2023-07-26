@@ -40,6 +40,7 @@ type TProps = {
 const Forum: NextPage<TProps> = ({ user }) => {
   const [openMenu, setOpenMenu] = useState(false)
   const [openCreatePostInput, setOpenCreatePostInput] = useState(false)
+  const [isAnonymPost, setIsAnonymPost] = useState(false)
 
   const posts = trpc.post.all.useQuery()
 
@@ -58,11 +59,11 @@ const Forum: NextPage<TProps> = ({ user }) => {
 
         <div className='flex relative items-start lg:container'>
 
-          <AsideSection openMenu={openMenu} setOpenMenu={setOpenMenu} user={user} />
+          <AsideSection isAnonymPost={isAnonymPost} setIsAnonymPost={setIsAnonymPost} openMenu={openMenu} setOpenMenu={setOpenMenu} user={user} />
 
           <main className='relative lg:w-10/12 w-full h-[2000px]'>
             <AsideToggle setOpenMenu={setOpenMenu} />
-            <CreatePostSection userId={user.id} openCreatePostInput={openCreatePostInput} setOpenCreatePostInput={setOpenCreatePostInput} />
+            <CreatePostSection isAnonymPost={isAnonymPost} userId={user.id} openCreatePostInput={openCreatePostInput} setOpenCreatePostInput={setOpenCreatePostInput} />
 
             <div className='sticky z-10 top-0 py-4 container bg-white/50 backdrop-blur-md border-b'>
               <div className='flex items-start justify-between gap-4'>

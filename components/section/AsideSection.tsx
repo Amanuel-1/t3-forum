@@ -1,10 +1,11 @@
-import { Bug, ChevronDown, LogOut, TrendingUp, User, VenetianMask } from 'lucide-react'
+import { ArrowLeftRight, Bug, ChevronDown, Globe, LogOut, TrendingUp, User, VenetianMask } from 'lucide-react'
 import React, { useState } from 'react'
 import { Separator } from '../ui/separator'
 import Link from 'next/link'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { Button } from '../ui/button'
 import { useRouter } from 'next/router'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
 
 type TProps = {
   user: {
@@ -12,10 +13,12 @@ type TProps = {
     name: string,
   },
   openMenu: boolean,
+  isAnonymPost: boolean,
+  setIsAnonymPost: (value: React.SetStateAction<boolean>) => void,
   setOpenMenu: (value: React.SetStateAction<boolean>) => void,
 }
 
-const AsideSection: React.FC<TProps> = ({ setOpenMenu, openMenu, user }) => {
+const AsideSection: React.FC<TProps> = ({ setOpenMenu, openMenu, user, isAnonymPost, setIsAnonymPost }) => {
 
   const [menu, setMenu] = useState('fyp')
   const router = useRouter()
@@ -39,6 +42,28 @@ const AsideSection: React.FC<TProps> = ({ setOpenMenu, openMenu, user }) => {
       transition-all
     `}>
       <div>
+
+        <div className='w-full flex justify-between'>
+          {isAnonymPost ? (
+            <VenetianMask className='w-5 aspect-square' />
+          ) : (
+            <Globe className='w-5 aspect-square' />
+          )}
+          <p className={`font-bold ${isAnonymPost ? 'text-red-600' : 'text-black'}`}>{isAnonymPost ? 'Anonym Mode' : 'Public Mode'}</p>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <ArrowLeftRight className='w-5 aspect-square cursor-pointer' onClick={() => setIsAnonymPost(!isAnonymPost)} />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Mode Julid Lo</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+
+        <Separator className='my-4' />
 
         <h2 className='text-lg font-bold'>Kategori Diskusi</h2>
         <ul className='mt-2 space-y-2'>
