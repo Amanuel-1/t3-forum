@@ -1,10 +1,11 @@
-# Notes For The Future Of Me
-- Use array matcher in middleware to make cookies work
+# Fitur
+- Bikin tulisan 
+- Bikin tulisan tapi bisa secara anonym
+- Data lo aman 👍️
 
-# Todo 
-- [x] Halaman utama (forum)
-- [x] Logout
-- [ ] Halaman Profil
-- [ ] Event route change (redirect feedback for UX)
-- [ ] Crud Post
-- [ ] Edit Profil
+# Tech Stack
+- Next JS
+- tRPC
+- Prisma
+- TailwindCSS + shadcn/ui 😎
+- Supabase 
