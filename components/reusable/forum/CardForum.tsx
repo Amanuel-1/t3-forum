@@ -14,10 +14,14 @@ type TProps = {
     name: string;
     username: string;
     id: string;
+  } | null,
+  Anonymous: {
+    username: string;
+    id: string;
   } | null
 }
 
-const CardForum: React.FC<TProps> = ({ id, content, user, createdAt }) => {
+const CardForum: React.FC<TProps> = ({ id, content, user, createdAt, Anonymous }) => {
   return (
     <Card>
       <CardHeader className='px-4 py-2'>
@@ -30,7 +34,7 @@ const CardForum: React.FC<TProps> = ({ id, content, user, createdAt }) => {
           </Avatar>
           <div>
             <p className='font-bold text-base'>{user ? user.name : 'Anonymous'}</p>
-            <p className='text-foreground/60 text-base'>{user ? user.username : 'anonim'}</p>
+            <p className='text-foreground/60 text-base'>{user ? user.username : Anonymous ? Anonymous.username : 'si-eek'}</p>
           </div>
 
         </CardTitle>
