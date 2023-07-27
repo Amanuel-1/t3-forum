@@ -15,6 +15,6 @@
 - [x] Logout
 - [x] Anonym Post
 - [ ] Halaman Profil
-- [ ] Event route change (redirect feedback for UX)
+- [x] Event route change (redirect feedback for UX)
 - [ ] Crud Post
 - [ ] Edit Profil
