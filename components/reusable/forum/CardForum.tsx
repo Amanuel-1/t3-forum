@@ -4,6 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { AlertOctagon, Forward, MessagesSquare } from 'lucide-react'
+import { useRouter } from 'next/router'
 import React from 'react'
 
 type TProps = {
@@ -15,18 +16,23 @@ type TProps = {
     username: string;
     id: string;
   } | null,
-  Anonymous: {
+  Anonymous?: {
     username: string;
     id: string;
   } | null
 }
 
 const CardForum: React.FC<TProps> = ({ id, content, user, createdAt, Anonymous }) => {
+
+  const router = useRouter()
+
   return (
     <Card>
       <CardHeader className='px-4 py-2'>
 
-        <CardTitle className='flex items-center gap-4'>
+        <CardTitle onClick={() => {
+          if(!Anonymous) router.push('/profil/' + user?.username)
+        }} className={`${Anonymous ? 'cursor-default' : 'cursor-pointer'} flex items-center gap-4`}>
 
           <Avatar>
             <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />

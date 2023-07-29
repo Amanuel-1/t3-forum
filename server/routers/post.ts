@@ -5,7 +5,8 @@ import { z } from 'zod'
 export const postRouter = router({
   all: procedure
     .query(async ({ ctx }) => {
-      const posts = await ctx.prisma.post.findMany({ select: {
+      const posts = await ctx.prisma.post.findMany({
+        select: {
           id: true,
           content: true,
           createdAt: true,
@@ -111,5 +112,39 @@ export const postRouter = router({
         status: 201,
         message: 'Postingan lu berhasil gua buat'
       }, createdPost)
+    }),
+  user: procedure
+    .input(z.object({
+      username: z.string()
+    }))
+    .query(async ({ input, ctx }) => {
+      const { username } = input
+      const existingPost = await ctx.prisma.post.findMany({
+        where: {
+          user: { username }
+        },
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+          user: {
+            select: {
+              name: true,
+              username: true,
+              id: true
+            }
+          },
+        }
+      })
+
+      if (!existingPost) return apiResponse({
+        status: 404,
+        message: 'Orang ini belom bikin postingan'
+      })
+
+      return apiResponse({
+        status: 200,
+        message: 'Ada ni bre'
+      }, existingPost)
     })
 })
