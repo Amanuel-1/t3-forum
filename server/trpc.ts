@@ -1,12 +1,14 @@
 import { prisma } from '@/prisma/db'
 import { initTRPC, inferAsyncReturnType } from '@trpc/server'
-import { CreateNextContextOptions } from '@trpc/server/adapters/next'
+import { createServerSideHelpers } from '@trpc/react-query/server'
+import { appRouter } from './routers/_app'
 
-export const createContext = async (opts: CreateNextContextOptions) => {
+export const createContext = async () => {
   return {
     prisma,
-  };
-};
+  }
+}
+
 
 // Avoid exporting the entire t-object
 // since it's not very descriptive.

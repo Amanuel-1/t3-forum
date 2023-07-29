@@ -8,6 +8,10 @@ import CardForum from '@/components/reusable/forum/CardForum'
 import { getAuthUser } from '@/lib/utils'
 import Layout from '@/components/section/Layout'
 import SubMenuHeader from '@/components/reusable/menu/SubMenuHeader'
+import { createServerSideHelpers } from '@trpc/react-query/server'
+import { appRouter } from '@/server/routers/_app'
+import { createContext } from '@/server/trpc'
+import superjson from 'superjson'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { username } = ctx.query
@@ -22,10 +26,21 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     }
   }
 
+  // Prefetch the data
+  const helpers = createServerSideHelpers({
+    router: appRouter,
+    ctx: await createContext(),
+    transformer: superjson
+  })
+
+  await helpers.user.profile.prefetch({ username: username as string })
+  await helpers.post.user.prefetch({ username: username as string })
+
   return {
     props: {
       username,
-      user
+      user,
+      trpcState: helpers.dehydrate()
     }
   }
 }
@@ -52,7 +67,7 @@ const ProfileDetail: NextPage<TProps> = ({ username, user }) => {
       <Layout user={user}>
         <main className='bg-background text-foreground selection:bg-foreground selection:text-background'>
 
-          <SubMenuHeader backUrl='/forum' title='Profil' data={userResponse?.data?.username}/>
+          <SubMenuHeader backUrl='/forum' title='Profil' data={userResponse?.data?.username} />
 
           <div className='container'>
 
