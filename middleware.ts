@@ -43,5 +43,5 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/login", "/test", "/forum", "/register", "/api/trpc/:path*"]
+  matcher: ["/", "/login", "/test", "/forum", "/register", "/api/trpc/:path*", "/profil/:path*"]
 }

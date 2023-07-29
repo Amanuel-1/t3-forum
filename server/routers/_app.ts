@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { procedure, router } from '../trpc'
 import { authRouter } from './auth'
 import { postRouter } from './post'
+import { userRouter } from './user'
 
 export const appRouter = router({
   hello: procedure
@@ -10,7 +11,8 @@ export const appRouter = router({
     return `Hello ${input}`
   }),
   auth: authRouter,
-  post: postRouter
+  post: postRouter,
+  user: userRouter
 })
 
 export type AppRouter = typeof appRouter
