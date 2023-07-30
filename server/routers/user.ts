@@ -22,5 +22,29 @@ export const userRouter = router({
         status: 200,
         message: 'Ada nih'
       }, excludeFields(userExist, ['password']))
+    }),
+  editAccount: procedure
+    .input(z.object({
+      name: z.string(),
+      username: z.string().min(3).trim().toLowerCase(),
+      bio: z.string().max(100).nullable(),
+      image: z.string().nullable(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const { username } = input
+      const updatedUser = await ctx.prisma.user.update({
+        data: { ...input },
+        where: { username }
+      })
+
+      if(!updatedUser) return apiResponse({
+        status: 400,
+        message: 'Aduh lagi gk bisa ngedit user bre'
+      })
+
+      return apiResponse({
+        status: 200,
+        message: 'Udah kelar di edit nih user nya'
+      })
     })
 })
