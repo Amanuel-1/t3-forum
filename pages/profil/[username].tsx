@@ -1,44 +1,60 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
 import { trpc } from '@/utils/trpc'
-import { ChevronLeft } from 'lucide-react'
 import { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
-import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Separator } from '@/components/ui/separator'
-import { User } from '@prisma/client'
 import CardForum from '@/components/reusable/forum/CardForum'
+import { getAuthUser } from '@/lib/utils'
+import Layout from '@/components/section/Layout'
+import SubMenuHeader from '@/components/reusable/menu/SubMenuHeader'
+import { createServerSideHelpers } from '@trpc/react-query/server'
+import { appRouter } from '@/server/routers/_app'
+import { createContext } from '@/server/trpc'
+import superjson from 'superjson'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { username } = ctx.query
+  const user = await getAuthUser(ctx.req.cookies?.token!)
+
+  if (!user) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false
+      }
+    }
+  }
+
+  // Prefetch the data
+  const helpers = createServerSideHelpers({
+    router: appRouter,
+    ctx: await createContext(),
+    transformer: superjson
+  })
+
+  await helpers.user.profile.prefetch({ username: username as string })
+  await helpers.post.user.prefetch({ username: username as string })
 
   return {
     props: {
-      username
+      username,
+      user,
+      trpcState: helpers.dehydrate()
     }
   }
 }
 
 type TProps = {
-  username: string
-}
-
-type TPost = {
-  id: string;
-  content: string;
-  createdAt: Date;
+  username: string,
   user: {
-    name: string;
-    username: string;
-    id: string;
-  } | null,
+    id: string,
+    username: string,
+    name: string,
+  }
 }
 
-type TUser = Omit<User, 'password'>
-
-const ProfileDetail: NextPage<TProps> = ({ username }) => {
-  const router = useRouter()
+const ProfileDetail: NextPage<TProps> = ({ username, user }) => {
 
   const { error: userError, data: userResponse } = trpc.user.profile.useQuery({ username })
   const { error: postError, data: postResponse } = trpc.post.user.useQuery({ username })
@@ -48,17 +64,12 @@ const ProfileDetail: NextPage<TProps> = ({ username }) => {
       <Head>
         <title>Profil Lo</title>
       </Head>
-      <main className='bg-background text-foreground selection:bg-foreground selection:text-background'>
-        <div className='container relative'>
+      <Layout user={user}>
+        <main className='bg-background text-foreground selection:bg-foreground selection:text-background'>
 
-          <div className='flex z-20 bg-white items-center sticky top-0 py-4 justify-between lg:justify-start gap-4'>
-            <Button onClick={() => router.push('/forum')} className='w-max'>
-              <ChevronLeft className='w-5 aspect-square' />
-            </Button>
-            <p className='text-lg'>Profil <code className='p-2 ml-2 bg-secondary rounded-md'>{userResponse?.data?.username}</code></p>
-          </div>
+          <SubMenuHeader backUrl='/forum' title='Profil' data={userResponse?.data?.username} />
 
-          <div className='h-[2000px]'>
+          <div className='container'>
 
             <div className='flex items-start gap-4 py-4'>
               {/** Preview Image */}
@@ -99,8 +110,8 @@ const ProfileDetail: NextPage<TProps> = ({ username }) => {
 
           </div>
 
-        </div>
-      </main>
+        </main>
+      </Layout>
     </>
   )
 }

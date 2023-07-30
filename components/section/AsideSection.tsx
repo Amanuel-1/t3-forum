@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { Button } from '../ui/button'
 import { useRouter } from 'next/router'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
+import { useAnonymousStore } from '@/lib/store'
 
 type TProps = {
   user: {
@@ -13,14 +14,14 @@ type TProps = {
     name: string,
   },
   openMenu: boolean,
-  isAnonymPost: boolean,
-  setIsAnonymPost: (value: React.SetStateAction<boolean>) => void,
   setOpenMenu: (value: React.SetStateAction<boolean>) => void,
 }
 
-const AsideSection: React.FC<TProps> = ({ setOpenMenu, openMenu, user, isAnonymPost, setIsAnonymPost }) => {
+const AsideSection: React.FC<TProps> = ({ setOpenMenu, openMenu, user }) => {
 
   const [menu, setMenu] = useState('fyp')
+  const { isAnonymPost, setIsAnonymPost } = useAnonymousStore((state) => ({ ...state }))
+
   const router = useRouter()
 
   const logoutHandler = async () => {
@@ -88,13 +89,13 @@ const AsideSection: React.FC<TProps> = ({ setOpenMenu, openMenu, user, isAnonymP
         <h2 className='text-lg font-bold'>Pengaturan</h2>
         <ul className='mt-2 space-y-2'>
           <li>
-            <Link href='/pengaturan/akun' className='flex items-center space-x-2 p-2 bg-white hover:bg-secondary rounded-md border'>
+            <Link href='/pengaturan/akun' className={`flex items-center space-x-2 p-2 ${router.asPath === '/pengaturan/akun' ? 'bg-secondary' : 'bg-white'} hover:bg-secondary rounded-md border`}>
               <User className='w-5 aspect-square' />
               <span className='text-md'>Akun</span>
             </Link>
           </li>
           <li>
-            <Link href='/pengaturan/anonymous' className='flex items-center space-x-2 p-2 bg-white hover:bg-secondary rounded-md border'>
+            <Link href='/pengaturan/anonymous' className={`flex items-center space-x-2 p-2 ${router.asPath === '/pengaturan/anonymous' ? 'bg-secondary' : 'bg-white'} hover:bg-secondary rounded-md border`}>
               <VenetianMask className='w-5 aspect-square' />
               <span className='text-md'>Anonymous</span>
             </Link>
