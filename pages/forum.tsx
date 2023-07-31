@@ -4,10 +4,23 @@ import Head from 'next/head'
 import React, { useEffect, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import CreatePostSection from '@/components/section/CreatePostSection'
-import CardForum from '@/components/reusable/forum/CardForum'
 import { trpc } from '@/utils/trpc'
 import Layout from '@/components/section/Layout'
 import { useAnonymousStore } from '@/lib/store'
+import dynamic from 'next/dynamic'
+import { Skeleton } from '@/components/ui/skeleton'
+
+const CardSkeleton = () => {
+  return (
+    <>
+      <Skeleton className="w-[100px] h-[20px] mb-4 rounded-full" />
+    </>
+  )
+}
+
+const CardForum = dynamic(() => import('../components/reusable/forum/CardForum'), {
+  loading: CardSkeleton
+})
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const user = await getAuthUser(ctx.req.cookies?.token!)
