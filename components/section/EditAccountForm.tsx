@@ -9,6 +9,7 @@ import { Loader2 } from 'lucide-react'
 import { trpc } from '@/utils/trpc'
 import { Textarea } from '../ui/textarea'
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert'
+import { TResponseData } from '@/lib/utils'
 
 const formSchema = z.object({
   username: z.string().min(3, {
@@ -35,12 +36,15 @@ type TProps = {
     image: string | null
   },
   openEditMenu: boolean,
+  responseData: TResponseData | null,
   setProfileHasBeenEdited: (value: React.SetStateAction<boolean>) => void,
-  setOpenEditMenu: (value: React.SetStateAction<boolean>) => void
+  setOpenEditMenu: (value: React.SetStateAction<boolean>) => void,
+  setResponseData: (value: React.SetStateAction<TResponseData | null>) => void
 }
 
-const EditAccountForm: React.FC<TProps> = ({ user, openEditMenu, setOpenEditMenu, setProfileHasBeenEdited }) => {
-  const { isLoading, mutate: editUser, error, data } = trpc.user.editAccount.useMutation()
+
+const EditAccountForm: React.FC<TProps> = ({ user, openEditMenu, responseData, setResponseData, setOpenEditMenu, setProfileHasBeenEdited }) => {
+  const { isLoading, mutate: editUser, error } = trpc.user.editAccount.useMutation()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,12 +55,13 @@ const EditAccountForm: React.FC<TProps> = ({ user, openEditMenu, setOpenEditMenu
     }
   })
 
-  const activeAlert = error || data
+  const activeAlert = error || responseData
 
   const submitHandler = (values: z.infer<typeof formSchema>) => {
     editUser({ ...values, image: null }, {
       onSuccess: (data) => {
         setProfileHasBeenEdited(true)
+        setResponseData(data)
       }
     })
   }
@@ -66,7 +71,7 @@ const EditAccountForm: React.FC<TProps> = ({ user, openEditMenu, setOpenEditMenu
       {activeAlert && (
         <Alert className='w-full mb-2'>
           <AlertTitle>Notifikasi</AlertTitle>
-          <AlertDescription>{error ? error.message.split(' ').slice(0, 5).join(' ') : data?.message}</AlertDescription>
+          <AlertDescription>{error ? error.message.split(' ').slice(0, 5).join(' ') : responseData?.message}</AlertDescription>
         </Alert>
       )}
       <Form {...form}>
@@ -112,7 +117,7 @@ const EditAccountForm: React.FC<TProps> = ({ user, openEditMenu, setOpenEditMenu
           />
 
           <div className='flex flex-col lg:flex-row items-center gap-2'>
-            <Button type="submit" disabled={isLoading || data?.status === 200} className='w-full lg:w-max'>
+            <Button type="submit" disabled={isLoading || responseData?.status === 200} className='w-full lg:w-max'>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -120,7 +125,7 @@ const EditAccountForm: React.FC<TProps> = ({ user, openEditMenu, setOpenEditMenu
                 </>
               ) : "Edit Profil"}
             </Button>
-            <Button onClick={() => setOpenEditMenu(false)} variant='outline' className='w-full lg:w-max'>
+            <Button type='button' onClick={() => setOpenEditMenu(false)} variant='outline' className='w-full lg:w-max'>
               Gak Jadi
             </Button>
           </div>

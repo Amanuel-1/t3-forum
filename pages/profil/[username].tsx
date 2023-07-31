@@ -65,7 +65,7 @@ const ProfileDetail: NextPage<TProps> = ({ username, user }) => {
         <title>Profil Lo</title>
       </Head>
       <Layout user={user}>
-        <main className='bg-background text-foreground selection:bg-foreground selection:text-background'>
+        <main className='bg-background text-foreground selection:bg-foreground selection:text-background pb-10'>
 
           <SubMenuHeader backUrl='/forum' title='Profil' data={userResponse?.data?.username} />
 

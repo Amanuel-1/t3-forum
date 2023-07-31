@@ -1,4 +1,4 @@
-import { getAuthUser } from '@/lib/utils'
+import { TResponseData, getAuthUser } from '@/lib/utils'
 import { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import React, { useEffect, useState } from 'react'
@@ -53,20 +53,22 @@ type TProps = {
   }
 }
 
-
 const PengaturanAkun: NextPage<TProps> = ({ user }) => {
   const [openEditMenu, setOpenEditMenu] = useState(false)
   const [profileHasBeenEdited, setProfileHasBeenEdited] = useState(false)
+
+  const [responseData, setResponseData] = useState<TResponseData | null>(null)
 
   const { data: userResponse, refetch: userRefetch } = trpc.user.profile.useQuery({
     username: user.username
   })
 
   useEffect(() => {
-    if (profileHasBeenEdited && !openEditMenu) {
+    if (profileHasBeenEdited) {
       userRefetch()
+      if(!openEditMenu) setResponseData(null)
     }
-  }, [profileHasBeenEdited, openEditMenu, userRefetch])
+  }, [profileHasBeenEdited, openEditMenu])
 
   return (
     <>
@@ -79,7 +81,7 @@ const PengaturanAkun: NextPage<TProps> = ({ user }) => {
           <SubMenuHeader backUrl='/forum' title='Pengaturan Akun' data={user.username} />
           <div className='relative'>
 
-            <EditAccountForm user={user} {...{ openEditMenu, setOpenEditMenu, setProfileHasBeenEdited }} />
+            <EditAccountForm user={user} {...{ openEditMenu, setOpenEditMenu, setProfileHasBeenEdited, responseData, setResponseData }} />
 
             <div className='container'>
               <div className='flex items-start gap-4 py-4'>
@@ -112,7 +114,7 @@ const PengaturanAkun: NextPage<TProps> = ({ user }) => {
               </div>
 
               <Button className='mt-4 w-full lg:w-max' onClick={() => setOpenEditMenu(true)}>
-                Edit Profil
+                Edit Profil Ini
               </Button>
             </div>
 

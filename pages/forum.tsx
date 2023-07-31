@@ -64,7 +64,7 @@ const Forum: NextPage<TProps> = ({ user }) => {
           </div>
         </div>
 
-        <ul className='py-4 space-y-4 container'>
+        <ul className='py-4 pb-20 space-y-4 container'>
           {posts.data?.data?.map((post, idx) => (
             <li key={idx}>
               <CardForum {...post} />

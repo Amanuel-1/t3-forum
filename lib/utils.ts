@@ -1,6 +1,5 @@
 import { User } from "@prisma/client"
 import { type ClassValue, clsx } from "clsx"
-import { getCookie } from "cookies-next"
 import { jwtVerify } from "jose"
 import { twMerge } from "tailwind-merge"
 
@@ -21,7 +20,7 @@ type TResponse = {
 export function apiResponse<T = void>(response: TResponse, data?: T) {
   return {
     ...response,
-    data
+    data: data as T
   }
 }
 
@@ -66,4 +65,8 @@ export function generateRandomStr(length: number): string {
   }
 
   return result
+}
+
+export type TResponseData = TResponse & {
+  data?: any
 }
