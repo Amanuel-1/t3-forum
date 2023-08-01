@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Bug, ChevronDown, Globe, LogOut, TrendingUp, User, VenetianMask } from 'lucide-react'
+import { ArrowLeftRight, Blinds, Bug, ChevronDown, Globe, LogOut, TrendingUp, User, VenetianMask } from 'lucide-react'
 import React, { useState } from 'react'
 import { Separator } from '../ui/separator'
 import Link from 'next/link'
@@ -44,7 +44,7 @@ const AsideSection: React.FC<TProps> = ({ setOpenMenu, openMenu, user }) => {
     `}>
       <div>
 
-        <div className='w-full flex justify-between'>
+        <div className='w-full border rounded-md py-2 px-4 bg-white flex justify-between'>
           {isAnonymPost ? (
             <VenetianMask className='w-5 aspect-square' />
           ) : (
@@ -64,9 +64,7 @@ const AsideSection: React.FC<TProps> = ({ setOpenMenu, openMenu, user }) => {
           </TooltipProvider>
         </div>
 
-        <Separator className='my-4' />
-
-        <h2 className='text-lg font-bold'>Kategori Diskusi</h2>
+        <h2 className='mt-8 text-lg font-bold'>Kategori Diskusi</h2>
         <ul className='mt-2 space-y-2'>
           <li onClick={() => {
             setMenu('fyp')
@@ -88,6 +86,12 @@ const AsideSection: React.FC<TProps> = ({ setOpenMenu, openMenu, user }) => {
 
         <h2 className='text-lg font-bold'>Pengaturan</h2>
         <ul className='mt-2 space-y-2'>
+          <li>
+            <Link href='/kelola/post' className={`flex items-center space-x-2 p-2 ${router.asPath === '/kelola/post' ? 'bg-secondary' : 'bg-white'} hover:bg-secondary rounded-md border`}>
+              <Blinds className='w-5 aspect-square' />
+              <span className='text-md'>Kelola Postingan</span>
+            </Link>
+          </li>
           <li>
             <Link href='/pengaturan/akun' className={`flex items-center space-x-2 p-2 ${router.asPath === '/pengaturan/akun' ? 'bg-secondary' : 'bg-white'} hover:bg-secondary rounded-md border`}>
               <User className='w-5 aspect-square' />

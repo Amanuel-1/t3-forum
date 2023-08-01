@@ -78,7 +78,7 @@ const CreatePostSection: React.FC<TProps> = ({ openCreatePostInput, setOpenCreat
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <p className='p-2 bg-secondary w-max text-sm mt-2 font-bold rounded-md'>{isAnonymPost ? 'Secara Anonym' : 'Secara Public'}</p>
+                <p className='p-2 bg-secondary w-max text-sm mt-2 font-bold rounded-md'>Secara <span className={isAnonymPost ? 'text-red-600' : 'text-black'}>{isAnonymPost ? 'Anonym' : 'Public'}</span></p>
               </TooltipTrigger>
               <TooltipContent>
                 <p>Ubah dari menu</p>
