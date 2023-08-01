@@ -23,7 +23,7 @@ const SubMenuHeader: React.FC<TProps> = ({ backUrl, title, data }) => {
         <p className='text-lg'>
           {title}
         </p>
-        <Loading data={data} skeletonFallback={<Skeleton className='p-2 rounded-md text-black'>Loading</Skeleton>}>
+        <Loading data={data} skeletonFallback={<Skeleton className='p-2 rounded-md text-muted'>Loading</Skeleton>}>
           <code className='p-2 bg-secondary rounded-md'>{data}</code>
         </Loading>
       </div>
