@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { trpc } from '@/utils/trpc'
 import { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
-import React from 'react'
+import React, { Suspense } from 'react'
 import { Separator } from '@/components/ui/separator'
 import CardForum from '@/components/reusable/forum/CardForum'
 import { getAuthUser } from '@/lib/utils'
@@ -12,6 +12,8 @@ import { createServerSideHelpers } from '@trpc/react-query/server'
 import { appRouter } from '@/server/routers/_app'
 import { createContext } from '@/server/trpc'
 import superjson from 'superjson'
+import { Skeleton } from '@/components/ui/skeleton'
+import Loading from '@/components/reusable/skeleton/Loading'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { username } = ctx.query
@@ -54,6 +56,15 @@ type TProps = {
   }
 }
 
+const UserDataSkeleton: React.FC = () => {
+  return (
+    <div className='flex flex-col items-start'>
+      <Skeleton className='w-24 h-6 rounded-md' />
+      <Skeleton className='w-12 h-6 mt-2 rounded-md' />
+    </div>
+  )
+}
+
 const ProfileDetail: NextPage<TProps> = ({ username, user }) => {
 
   const { error: userError, data: userResponse } = trpc.user.profile.useQuery({ username })
@@ -77,34 +88,46 @@ const ProfileDetail: NextPage<TProps> = ({ username, user }) => {
                 <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
-              <div>
-                <h2 className='text-lg font-bold'>{userResponse?.data?.name}</h2>
-                <p>{userResponse?.data?.username}</p>
-              </div>
+              <Loading data={userResponse?.data} skeletonFallback={<UserDataSkeleton />}>
+                <div>
+                  <h2 className='text-lg font-bold'>{userResponse?.data?.name}</h2>
+                  <p>{userResponse?.data?.username}</p>
+                </div>
+              </Loading>
             </div>
 
             <Separator />
 
             <div className='mt-2'>
               <h2 className='text-lg font-bold'>Bio</h2>
-              <p className={`mt-2 ${userResponse?.data?.bio ? '' : 'text-foreground/60'}`}>{userResponse?.data?.bio || 'Kosong'}</p>
+              <Loading data={userResponse?.data} skeletonFallback={<Skeleton className='mt-2 w-24 h-4 rounded-md' />}>
+                <p className={`mt-2 ${userResponse?.data?.bio ? '' : 'text-foreground/60'}`}>{userResponse?.data?.bio || 'Kosong'}</p>
+              </Loading>
             </div>
 
             <div className='mt-2'>
               <h2 className='text-lg font-bold'>Postingan</h2>
 
               <ul className='py-2 space-y-4'>
-                {postResponse?.data?.map((post, idx) => (
-                  <li key={idx}>
-                    <CardForum {...post} />
-                  </li>
-                ))}
-
-                {!postResponse?.data?.length && (
-                  <li className='text-foreground/60'>
-                    Kosong
-                  </li>
-                )}
+                <Loading data={postResponse?.data} skeletonFallback={<Skeleton className='w-full h-12 rounded-md' />}>
+                  {
+                    postResponse?.data?.length
+                      ? (
+                        <>
+                          {postResponse?.data?.map((post, idx) => (
+                            <li key={idx}>
+                              <CardForum {...post} />
+                            </li>
+                          ))}
+                        </>
+                      ) 
+                      : (
+                        <li className='text-foreground/60'>
+                          Kosong
+                        </li>
+                      )
+                  }
+                </Loading>
               </ul>
             </div>
 

@@ -13,6 +13,8 @@ import { createServerSideHelpers } from '@trpc/react-query/server'
 import { appRouter } from '@/server/routers/_app'
 import { createContext } from '@/server/trpc'
 import superjson from 'superjson'
+import Loading from '@/components/reusable/skeleton/Loading'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const user = await getAuthUser(ctx.req.cookies?.token!)
@@ -66,7 +68,7 @@ const PengaturanAkun: NextPage<TProps> = ({ user }) => {
   useEffect(() => {
     if (profileHasBeenEdited) {
       userRefetch()
-      if(!openEditMenu) setResponseData(null)
+      if (!openEditMenu) setResponseData(null)
     }
   }, [profileHasBeenEdited, openEditMenu])
 
@@ -100,17 +102,23 @@ const PengaturanAkun: NextPage<TProps> = ({ user }) => {
 
               <div className='mt-2'>
                 <h2 className='text-lg font-bold'>Nama Lengkap</h2>
-                <p className={`mt-2`}>{userResponse?.data?.name}</p>
+                <Loading data={userResponse?.data?.name} skeletonFallback={<Skeleton className='w-24 p-2 rounded-md mt-2' />}>
+                  <p className={`mt-2`}>{userResponse?.data?.name}</p>
+                </Loading>
               </div>
 
               <div className='mt-2'>
                 <h2 className='text-lg font-bold'>Username</h2>
-                <p className={`mt-2`}>{userResponse?.data?.username}</p>
+                <Loading data={userResponse?.data?.username} skeletonFallback={<Skeleton className='w-24 p-2 rounded-md mt-2' />}>
+                  <p className={`mt-2`}>{userResponse?.data?.username}</p>
+                </Loading>
               </div>
 
               <div className='mt-2'>
                 <h2 className='text-lg font-bold'>Bio</h2>
-                <p className={`mt-2 ${userResponse?.data?.bio ? '' : 'text-foreground/60'}`}>{userResponse?.data?.bio || 'Kosong'}</p>
+                <Loading data={userResponse?.data} skeletonFallback={<Skeleton className='w-24 p-2 rounded-md mt-2' />}>
+                  <p className={`mt-2 ${userResponse?.data?.bio ? '' : 'text-foreground/60'}`}>{userResponse?.data?.bio || 'Kosong'}</p>
+                </Loading>
               </div>
 
               <Button className='mt-4 w-full lg:w-max' onClick={() => setOpenEditMenu(true)}>

@@ -1,7 +1,9 @@
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { ChevronLeft } from 'lucide-react'
 import { useRouter } from 'next/router'
 import React from 'react'
+import Loading from '../skeleton/Loading'
 
 type TProps = {
   backUrl: string,
@@ -17,7 +19,14 @@ const SubMenuHeader: React.FC<TProps> = ({ backUrl, title, data }) => {
       <Button onClick={() => router.push(backUrl)} className='w-max'>
         <ChevronLeft className='w-5 aspect-square' />
       </Button>
-      <p className='text-lg'>{title} <code className='p-2 ml-2 bg-secondary rounded-md'>{data}</code></p>
+      <div className='flex items-center gap-2'>
+        <p className='text-lg'>
+          {title}
+        </p>
+        <Loading data={data} skeletonFallback={<Skeleton className='p-2 rounded-md text-black'>Loading</Skeleton>}>
+          <code className='p-2 bg-secondary rounded-md'>{data}</code>
+        </Loading>
+      </div>
     </div>
   )
 }
