@@ -13,6 +13,7 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import Head from 'next/head'
+import { trimErrMessage } from '@/lib/utils'
 
 const formSchema = z.object({
   username: z.string().min(3, {
@@ -67,7 +68,7 @@ const Login: NextPage = () => {
           {activeAlert && (
             <Alert className='w-full'>
               <AlertTitle className='tracking-wide'>Notifikasi</AlertTitle>
-              <AlertDescription>{error ? error.message.split(' ').slice(0, 5).join(' ') : response?.message}</AlertDescription>
+              <AlertDescription>{error ? trimErrMessage(error.message, 4) : response?.message}</AlertDescription>
             </Alert>
           )}
 

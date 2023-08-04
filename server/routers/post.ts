@@ -10,7 +10,7 @@ export const postRouter = router({
           id: true,
           content: true,
           createdAt: true,
-          user: {
+          User: {
             select: {
               name: true,
               username: true,
@@ -38,6 +38,43 @@ export const postRouter = router({
         status: 200,
         message: 'Semua postingan'
       }, posts)
+    }),
+  byId: procedure
+    .input(z.string())
+    .query(async ({ input, ctx }) => {
+      const postId = input
+
+      const existingPost = await ctx.prisma.post.findUnique({
+        where: { id: postId },
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+          User: {
+            select: {
+              id: true,
+              name: true,
+              username: true
+            }
+          },
+          Anonymous: {
+            select: {
+              id: true,
+              username: true
+            }
+          }
+        }
+      })
+
+      if (!existingPost) return apiResponse({
+        status: 404,
+        message: 'Postingan gk ada'
+      })
+
+      return apiResponse({
+        status: 200,
+        message: 'Postingan ada ni'
+      }, existingPost)
     }),
   store: procedure
     .input(z.object({
@@ -115,19 +152,21 @@ export const postRouter = router({
     }),
   user: procedure
     .input(z.object({
-      username: z.string()
+      username: z.string(),
+      includeAnonymous: z.boolean().default(false),
     }))
     .query(async ({ input, ctx }) => {
-      const { username } = input
+      const { username, includeAnonymous } = input
+
       const existingPost = await ctx.prisma.post.findMany({
         where: {
-          user: { username }
+          User: { username },
         },
         select: {
           id: true,
           content: true,
           createdAt: true,
-          user: {
+          User: {
             select: {
               name: true,
               username: true,
@@ -137,14 +176,139 @@ export const postRouter = router({
         }
       })
 
+      const data = []
+
       if (!existingPost) return apiResponse({
         status: 404,
         message: 'Orang ini belom bikin postingan'
       })
 
+      if (includeAnonymous) {
+        const existingAnonymousPost = await ctx.prisma.post.findMany({
+          where: {
+            Anonymous: {
+              userId: existingPost[0].User?.id
+            }
+          },
+          select: {
+            id: true,
+            content: true,
+            createdAt: true,
+            Anonymous: {
+              select: {
+                username: true,
+                id: true
+              }
+            },
+          }
+        })
+
+        if (!existingAnonymousPost) return apiResponse({
+          status: 404,
+          message: 'Orang ini belom bikin postingan'
+        })
+
+        data.push(...existingAnonymousPost)
+      }
+
+      data.push(...existingPost)
+
       return apiResponse({
         status: 200,
         message: 'Ada ni bre'
-      }, existingPost)
+      }, data)
+    }),
+  edit: procedure
+    .input(z.object({
+      content: z.string().min(3).max(255),
+      userId: z.string(),
+      postId: z.string(),
+      isAnonymPost: z.boolean()
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const { content, userId, postId, isAnonymPost } = input
+
+      // Jika pengen switch ke mode anonym
+      if (isAnonymPost) {
+        const anonymousPost = await ctx.prisma.post.findUnique({
+          where: {
+            id: postId
+          }
+        })
+
+        // Kita cek apakah user tersebut udah punya akun anonym apa belom
+        if (anonymousPost && !anonymousPost.anonymousId && anonymousPost.userId) {
+
+          // Jika belom punya akun anonym
+          const createdAnonymousUser = await ctx.prisma.anonymous.create({
+            data: {
+              userId: anonymousPost.userId,
+              username: 'si-' + generateRandomStr(4),
+            },
+          })
+
+          if (!createdAnonymousUser) return apiResponse({
+            status: 400,
+            message: 'Gagal update postingan anonym bre :('
+          })
+
+          const updatedAnonymousPost = await ctx.prisma.post.update({
+            where: { id: postId },
+            data: {
+              userId: null,
+              anonymousId: createdAnonymousUser?.id,
+              content,
+            }
+          })
+
+          if (!updatedAnonymousPost) return apiResponse({
+            status: 400,
+            message: 'Gagal update postingan anonym bre :('
+          })
+
+          return apiResponse({
+            status: 201,
+            message: 'Berhasil meng-update postingan anonym!'
+          }, updatedAnonymousPost)
+        }
+
+        // Kalo udah punya akun anonym
+        const updatedAnonymousPost = await ctx.prisma.post.update({
+          where: { id: postId },
+          data: {
+            userId: null,
+            anonymousId: anonymousPost?.anonymousId,
+            content,
+          }
+        })
+
+        if (!updatedAnonymousPost) return apiResponse({
+          status: 400,
+          message: 'Gagal update postingan anonym bre :('
+        })
+
+        return apiResponse({
+          status: 201,
+          message: 'Berhasil meng-update postingan anonym!'
+        }, updatedAnonymousPost)
+      }
+
+      // Update Post Publically
+      const updatedPost = await ctx.prisma.post.update({
+        where: { id: postId },
+        data: {
+          content
+        }
+      })
+
+      if (!updatedPost) return apiResponse({
+        status: 400,
+        message: 'Postingan lu gk bisa di update sekarang bre'
+      })
+
+      return apiResponse({
+        status: 201,
+        message: 'Postingan lu berhasil gua update'
+      }, updatedPost)
     })
 })

@@ -21,7 +21,7 @@ model User {
 model Anonymous {
   id       String @id @default(uuid())
   userId   String @unique
-  user     User   @relation(fields: [userId], references: [id])
+  User     User   @relation(fields: [userId], references: [id])
   username String
   Post     Post[]
 }
@@ -29,7 +29,7 @@ model Anonymous {
 model Post {
   id          String     @id @default(uuid())
   content     String     @db.VarChar(255)
-  user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String?
   anonymousId String?
   Anonymous   Anonymous? @relation(fields: [anonymousId], references: [id])

@@ -9,11 +9,7 @@ type TProps = {
 const Loading: React.FC<TProps> = ({ data, children, skeletonFallback }) => {
   return (
     <>
-      {
-        data
-          ? children
-          : skeletonFallback
-      }
+      { data ? children : skeletonFallback }
     </>
   )
 }

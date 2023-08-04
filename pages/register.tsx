@@ -26,6 +26,7 @@ import { Separator } from '@/components/ui/separator'
 import { useRouter } from 'next/router'
 import { trpc } from '@/utils/trpc'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { trimErrMessage } from '@/lib/utils'
 
 const formSchema = z.object({
   username: z.string().min(3, {
@@ -79,7 +80,7 @@ const Register: NextPage = () => {
           {activeAlert && (
             <Alert className='w-full'>
               <AlertTitle>Notifikasi</AlertTitle>
-              <AlertDescription>{error ? error.message.split(' ').slice(0, 5).join(' ') : data?.message}</AlertDescription>
+              <AlertDescription>{error ? trimErrMessage(error.message, 4) : data?.message}</AlertDescription>
             </Alert>
           )}
 

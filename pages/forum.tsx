@@ -62,7 +62,7 @@ const Forum: NextPage<TProps> = ({ user }) => {
         <title>Forum</title>
       </Head>
       <Layout user={user}>
-        <CreatePostSection isAnonymPost={isAnonymPost} userId={user.id} openCreatePostInput={openCreatePostInput} setOpenCreatePostInput={setOpenCreatePostInput} />
+        <CreatePostSection userId={user.id} {...{ isAnonymPost, openCreatePostInput, setOpenCreatePostInput }} />
 
         <div className='sticky z-10 top-0 py-4 container bg-white/50 backdrop-blur-md border-b'>
           <div className='flex items-start justify-between gap-4'>

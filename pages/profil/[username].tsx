@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { trpc } from '@/utils/trpc'
 import { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
-import React, { Suspense } from 'react'
+import React from 'react'
 import { Separator } from '@/components/ui/separator'
 import CardForum from '@/components/reusable/forum/CardForum'
 import { getAuthUser } from '@/lib/utils'
@@ -14,6 +14,7 @@ import { createContext } from '@/server/trpc'
 import superjson from 'superjson'
 import { Skeleton } from '@/components/ui/skeleton'
 import Loading from '@/components/reusable/skeleton/Loading'
+import Empty from '@/components/reusable/skeleton/Empty'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { username } = ctx.query
@@ -110,23 +111,17 @@ const ProfileDetail: NextPage<TProps> = ({ username, user }) => {
 
               <ul className='py-2 space-y-4'>
                 <Loading data={postResponse?.data} skeletonFallback={<Skeleton className='w-full h-12 rounded-md' />}>
-                  {
-                    postResponse?.data?.length
-                      ? (
-                        <>
-                          {postResponse?.data?.map((post, idx) => (
-                            <li key={idx}>
-                              <CardForum {...post} />
-                            </li>
-                          ))}
-                        </>
-                      ) 
-                      : (
-                        <li className='text-foreground/60'>
-                          Kosong
-                        </li>
-                      )
-                  }
+                  <Empty data={postResponse?.data} emptyFallback={
+                    <li className='text-foreground/60'>
+                      Kosong
+                    </li>
+                  }>
+                    {postResponse?.data?.map((post, idx) => (
+                      <li key={idx}>
+                        <CardForum {...post} />
+                      </li>
+                    ))}
+                  </Empty>
                 </Loading>
               </ul>
             </div>

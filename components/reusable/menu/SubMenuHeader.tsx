@@ -8,7 +8,7 @@ import Loading from '../skeleton/Loading'
 type TProps = {
   backUrl: string,
   title: string,
-  data: string | undefined
+  data: string | undefined | null
 }
 
 const SubMenuHeader: React.FC<TProps> = ({ backUrl, title, data }) => {
@@ -23,9 +23,11 @@ const SubMenuHeader: React.FC<TProps> = ({ backUrl, title, data }) => {
         <p className='text-lg'>
           {title}
         </p>
-        <Loading data={data} skeletonFallback={<Skeleton className='p-2 rounded-md text-muted'>Loading</Skeleton>}>
-          <code className='p-2 bg-secondary rounded-md'>{data}</code>
-        </Loading>
+        {data !== null && (
+          <Loading data={data} skeletonFallback={<Skeleton className='p-2 rounded-md text-muted'>Loading</Skeleton>}>
+            <code className='p-2 bg-secondary rounded-md'>{data}</code>
+          </Loading>
+        )}
       </div>
     </div>
   )

@@ -70,3 +70,16 @@ export function generateRandomStr(length: number): string {
 export type TResponseData = TResponse & {
   data?: any
 }
+
+export function trimErrMessage(message: string, wordLength: number) {
+  const splittedMessage = message.split(' ')
+  splittedMessage.splice(wordLength + 1, -1, '...')
+
+  return splittedMessage.join(' ')
+}
+
+export type TSelectedPost = {
+  id: string,
+  content: string,
+  userId: string
+}

@@ -11,7 +11,7 @@ type TProps = {
   id: string,
   content: string,
   createdAt: string,
-  user: {
+  User?: {
     name: string;
     username: string;
     id: string;
@@ -22,7 +22,7 @@ type TProps = {
   } | null
 }
 
-const CardForum: React.FC<TProps> = ({ id, content, user, createdAt, Anonymous }) => {
+const CardForum: React.FC<TProps> = ({ id, content, User, createdAt, Anonymous }) => {
 
   const router = useRouter()
 
@@ -31,7 +31,7 @@ const CardForum: React.FC<TProps> = ({ id, content, user, createdAt, Anonymous }
       <CardHeader className='px-4 py-2'>
 
         <CardTitle onClick={() => {
-          if(!Anonymous) router.push('/profil/' + user?.username)
+          if(!Anonymous) router.push('/profil/' + User?.username)
         }} className={`${Anonymous ? 'cursor-default' : 'cursor-pointer'} flex items-center gap-4`}>
 
           <Avatar>
@@ -39,8 +39,8 @@ const CardForum: React.FC<TProps> = ({ id, content, user, createdAt, Anonymous }
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div>
-            <p className='font-bold text-base'>{user ? user.name : 'Anonymous'}</p>
-            <p className='text-foreground/60 text-base'>{user ? user.username : Anonymous ? Anonymous.username : 'si-eek'}</p>
+            <p className='font-bold text-base'>{User ? User.name : 'Anonymous'}</p>
+            <p className='text-foreground/60 text-base'>{User ? User.username : Anonymous ? Anonymous.username : 'si-eek'}</p>
           </div>
 
         </CardTitle>
