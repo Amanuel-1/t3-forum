@@ -72,7 +72,6 @@ const DashboardPost: NextPage<TProps> = ({ user }) => {
   useEffect(() => {
     if(postHasBeenEdited) {
       postRefetch()
-      console.log(responseData)
       if(!openEditMenu) setResponseData(null)
     }
   }, [postHasBeenEdited, openEditMenu])
