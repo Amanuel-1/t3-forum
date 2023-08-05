@@ -15,6 +15,7 @@ import { createContext } from '@/server/trpc'
 import superjson from 'superjson'
 import Loading from '@/components/reusable/skeleton/Loading'
 import { Skeleton } from '@/components/ui/skeleton'
+import RefetchData from '@/components/reusable/global/RefetchData'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const user = await getAuthUser(ctx.req.cookies?.token!)
@@ -61,7 +62,7 @@ const PengaturanAkun: NextPage<TProps> = ({ user }) => {
 
   const [responseData, setResponseData] = useState<TResponseData | null>(null)
 
-  const { data: userResponse, refetch: userRefetch } = trpc.user.profile.useQuery({
+  const { data: userResponse, isRefetching, refetch: userRefetch } = trpc.user.profile.useQuery({
     username: user.username
   })
 
@@ -81,6 +82,8 @@ const PengaturanAkun: NextPage<TProps> = ({ user }) => {
         <main className='bg-background text-foreground selection:bg-foreground selection:text-background'>
 
           <SubMenuHeader backUrl='/forum' title='Pengaturan Akun' data={user.username} />
+          <RefetchData isRefetching={isRefetching} />
+
           <div className='relative'>
 
             <EditAccountForm user={user} {...{ openEditMenu, setOpenEditMenu, setProfileHasBeenEdited, responseData, setResponseData }} />
@@ -126,7 +129,7 @@ const PengaturanAkun: NextPage<TProps> = ({ user }) => {
               </Button>
             </div>
 
-          </div>
+          </Re>
 
         </main>
       </Layout>

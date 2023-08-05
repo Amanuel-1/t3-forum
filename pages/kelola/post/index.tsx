@@ -14,6 +14,7 @@ import CardForum from '@/components/reusable/kelola/CardForum'
 import { trpc } from '@/utils/trpc'
 import Empty from '@/components/reusable/skeleton/Empty'
 import EditPostForm from '@/components/reusable/kelola/EditPostForm'
+import RefetchData from '@/components/reusable/global/RefetchData'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const user = await getAuthUser(ctx.req.cookies?.token!)
@@ -58,10 +59,11 @@ type TProps = {
 
 const DashboardPost: NextPage<TProps> = ({ user }) => {
 
-  const { error: postError, data: postResponse, refetch: postRefetch } = trpc.post.user.useQuery({
+  const { error: postError, isRefetching, data: postResponse, refetch: postRefetch } = trpc.post.user.useQuery({
     username: user.username,
     includeAnonymous: true
   })
+
 
   const [selectedPost, setSelectedPost] = useState<TSelectedPost | null>(null)
 
@@ -70,9 +72,11 @@ const DashboardPost: NextPage<TProps> = ({ user }) => {
   const [responseData, setResponseData] = useState<TResponseData | null>(null)
 
   useEffect(() => {
-    if(postHasBeenEdited) {
+    if (postHasBeenEdited) {
       postRefetch()
-      if(!openEditMenu) setResponseData(null)
+      console.log(responseData)
+
+      if (!openEditMenu) setResponseData(null)
     }
   }, [postHasBeenEdited, openEditMenu])
 
@@ -85,6 +89,7 @@ const DashboardPost: NextPage<TProps> = ({ user }) => {
         <main className='bg-background text-foreground selection:bg-foreground selection:text-background'>
 
           <SubMenuHeader backUrl='/forum' title='Kelola Postingan' data={null} />
+          <RefetchData isRefetching={isRefetching} />
 
           <div>
             <EditPostForm

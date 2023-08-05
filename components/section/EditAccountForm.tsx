@@ -126,7 +126,7 @@ const EditAccountForm: React.FC<TProps> = ({ user, openEditMenu, responseData, s
               ) : "Edit Profil"}
             </Button>
             <Button type='button' onClick={() => setOpenEditMenu(false)} variant='outline' className='w-full lg:w-max'>
-              Gak Jadi
+              {openEditMenu && responseData?.status === 200 ? 'Tutup Menu' : 'Gak Jadi'}
             </Button>
           </div>
         </form>
