@@ -221,7 +221,7 @@ export const postRouter = router({
   edit: procedure
     .input(z.object({
       content: z.string().min(3).max(255),
-      userId: z.string(),
+      userId: z.string().nullable(),
       postId: z.string(),
       isAnonymPost: z.boolean()
     }))
@@ -239,24 +239,35 @@ export const postRouter = router({
         // Kita cek apakah user tersebut udah punya akun anonym apa belom
         if (anonymousPost && !anonymousPost.anonymousId && anonymousPost.userId) {
 
-          // Jika belom punya akun anonym
-          const createdAnonymousUser = await ctx.prisma.anonymous.create({
-            data: {
-              userId: anonymousPost.userId,
-              username: 'si-' + generateRandomStr(4),
-            },
+          // Jika udah punya akun anonym
+          let existingAnonymousUser = await ctx.prisma.anonymous.findUnique({
+            where: {
+              userId: anonymousPost.userId
+            }
           })
 
-          if (!createdAnonymousUser) return apiResponse({
-            status: 400,
-            message: 'Gagal update postingan anonym bre :('
-          })
+          // Jika belom punya akun anonym
+          if (!existingAnonymousUser) {
+            const createdAnonymousUser = await ctx.prisma.anonymous.create({
+              data: {
+                userId: anonymousPost?.userId,
+                username: 'si-' + generateRandomStr(4),
+              },
+            })
+
+            if (!createdAnonymousUser) return apiResponse({
+              status: 400,
+              message: 'Gagal update postingan anonym bre :('
+            })
+
+            existingAnonymousUser = createdAnonymousUser
+          }
 
           const updatedAnonymousPost = await ctx.prisma.post.update({
             where: { id: postId },
             data: {
               userId: null,
-              anonymousId: createdAnonymousUser?.id,
+              anonymousId: existingAnonymousUser?.id,
               content,
             }
           })
@@ -272,34 +283,48 @@ export const postRouter = router({
           }, updatedAnonymousPost)
         }
 
-        // Kalo udah punya akun anonym
-        const updatedAnonymousPost = await ctx.prisma.post.update({
+      }
+
+      // Update Post Publically
+      let updatedPost = null
+
+      // Jika userId nya gk null
+      if (userId) {
+        updatedPost = await ctx.prisma.post.update({
           where: { id: postId },
           data: {
-            userId: null,
-            anonymousId: anonymousPost?.anonymousId,
-            content,
+            userId: userId,
+            anonymousId: null, // Buat pastiin bakal jadi post public
+            content
+          }
+        })
+      }
+
+      // Jika userId nya null
+      if (!userId) {
+        const existingAnonymousPost = await ctx.prisma.post.findUnique({
+          where: { id: postId },
+          select: {
+            Anonymous: {
+              select: { userId: true }
+            }
           }
         })
 
-        if (!updatedAnonymousPost) return apiResponse({
+        if (!existingAnonymousPost) return apiResponse({
           status: 400,
           message: 'Gagal update postingan anonym bre :('
         })
 
-        return apiResponse({
-          status: 201,
-          message: 'Berhasil meng-update postingan anonym!'
-        }, updatedAnonymousPost)
+        updatedPost = await ctx.prisma.post.update({
+          where: { id: postId },
+          data: {
+            userId: existingAnonymousPost.Anonymous?.userId,
+            anonymousId: null, // Buat pastiin bakal jadi post public
+            content
+          }
+        })
       }
-
-      // Update Post Publically
-      const updatedPost = await ctx.prisma.post.update({
-        where: { id: postId },
-        data: {
-          content
-        }
-      })
 
       if (!updatedPost) return apiResponse({
         status: 400,

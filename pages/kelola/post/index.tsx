@@ -72,6 +72,7 @@ const DashboardPost: NextPage<TProps> = ({ user }) => {
   useEffect(() => {
     if(postHasBeenEdited) {
       postRefetch()
+      console.log(responseData)
       if(!openEditMenu) setResponseData(null)
     }
   }, [postHasBeenEdited, openEditMenu])
@@ -88,7 +89,7 @@ const DashboardPost: NextPage<TProps> = ({ user }) => {
 
           <div>
             <EditPostForm
-              userId={selectedPost?.userId!}
+              userId={selectedPost?.userId || null}
               postId={selectedPost?.id!}
               content={selectedPost?.content!}
               isAnonymous={selectedPost?.userId! === undefined}

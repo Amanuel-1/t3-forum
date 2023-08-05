@@ -4,22 +4,18 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { Loader2 } from 'lucide-react'
+import { ArrowLeftRight, Loader2 } from 'lucide-react'
 import { trpc } from '@/utils/trpc'
 import { Textarea } from '@/components/ui/textarea'
-import { TResponseData } from '@/lib/utils'
+import { TResponseData, trimErrMessage } from '@/lib/utils'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Input } from '@/components/ui/input'
 
 const formSchema = z.object({
   content: z.string().min(3).max(255),
-  isAnonymPost: z.number(),
-  userId: z.string(),
-  postId: z.string(),
 })
 
 type TProps = {
-  userId: string,
+  userId: string | null,
   postId: string,
   content: string,
   isAnonymous: boolean,
@@ -35,13 +31,13 @@ const EditPostForm: React.FC<TProps> = ({ userId, postId, content, isAnonymous, 
 
   const [anonymousMode, setAnonymousMode] = useState(isAnonymous)
 
+  const [currentUserId, setCurrentUserId] = useState(userId)
+  const [currentPostId, setCurrentPostId] = useState(postId)
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       content: '',
-      isAnonymPost: 0,
-      userId: '',
-      postId: ''
     },
   })
 
@@ -50,9 +46,8 @@ const EditPostForm: React.FC<TProps> = ({ userId, postId, content, isAnonymous, 
 
     if (postId) {
       form.setValue('content', content)
-      form.setValue('isAnonymPost', +isAnonymous)
-      form.setValue('userId', userId)
-      form.setValue('postId', postId)
+      setCurrentUserId(userId)
+      setCurrentPostId(postId)
     }
 
   }, [postId])
@@ -62,9 +57,18 @@ const EditPostForm: React.FC<TProps> = ({ userId, postId, content, isAnonymous, 
   const activeAlert = error || responseData
 
   const submitHandler = (values: z.infer<typeof formSchema>) => {
+    console.log({
+      ...values,
+      userId: currentUserId,
+      postId: currentPostId,
+      isAnonymPost: anonymousMode
+    })
+    
     editPost({
       ...values,
-      isAnonymPost: !!values.isAnonymPost
+      userId: currentUserId,
+      postId: currentPostId,
+      isAnonymPost: anonymousMode
     }, {
       onSuccess: (data) => {
         setPostHasBeenEdited(true)
@@ -80,13 +84,14 @@ const EditPostForm: React.FC<TProps> = ({ userId, postId, content, isAnonymous, 
           <Alert className='mb-4'>
             <AlertTitle>Notfikasi</AlertTitle>
             <AlertDescription>
-              {error ? error.message.split(' ').slice(0, 5).join(' ') : responseData?.message}
+              {error ? trimErrMessage(error.message, 4) : responseData?.message}
             </AlertDescription>
           </Alert>
         )}
 
-        <Button onClick={() => setAnonymousMode(!anonymousMode)} className='w-full lg:w-max' variant='outline'>
-          Ubah Jadi <span className={`ml-2 font-bold ${anonymousMode ? 'text-black' : 'text-red-600'}`}>{anonymousMode ? 'Public' : 'Anonymous'} Post</span>
+        <Button onClick={() => setAnonymousMode(!anonymousMode)} className='w-full lg:w-max space-x-2' variant='outline'>
+          <ArrowLeftRight className='w-4 aspect-square' />
+          <span className={`ml-1 font-bold ${anonymousMode ? 'text-red-600' : 'text-black'}`}>{anonymousMode ? 'Anonymous' : 'Public'} Post</span>
         </Button>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(submitHandler)} className="space-y-4 mt-4">
@@ -98,42 +103,6 @@ const EditPostForm: React.FC<TProps> = ({ userId, postId, content, isAnonymous, 
                   <FormLabel>Content</FormLabel>
                   <FormControl>
                     <Textarea placeholder="Maksimal 100 karakter" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="isAnonymPost"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input type='hidden' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="userId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input type='hidden' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="postId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input type='hidden' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -153,6 +122,7 @@ const EditPostForm: React.FC<TProps> = ({ userId, postId, content, isAnonymous, 
                 Gak Jadi
               </Button>
             </div>
+
           </form>
         </Form>
       </div>
