@@ -129,7 +129,7 @@ const PengaturanAkun: NextPage<TProps> = ({ user }) => {
               </Button>
             </div>
 
-          </Re>
+          </div>
 
         </main>
       </Layout>

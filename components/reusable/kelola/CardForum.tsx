@@ -5,6 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { TSelectedPost } from '@/lib/utils'
+import { trpc } from '@/utils/trpc'
 import { PenBox, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/router'
 import React from 'react'
@@ -24,13 +25,20 @@ type TProps = {
   } | null,
   setOpenEditMenu: (value: React.SetStateAction<boolean>) => void,
   setSelectedPost: (value: React.SetStateAction<TSelectedPost | null>) => void
+  setPostHasBeenDeleted: (value: React.SetStateAction<boolean>) => void
 }
 
-const CardForum: React.FC<TProps> = ({ id, content, User, createdAt, Anonymous, setOpenEditMenu, setSelectedPost }) => {
+const CardForum: React.FC<TProps> = ({ id, content, User, createdAt, Anonymous, setOpenEditMenu, setSelectedPost, setPostHasBeenDeleted }) => {
+
+  const { mutate: deletePost } = trpc.post.delete.useMutation()
 
   const router = useRouter()
   const deletePostHandler = () => {
-    console.log('delete ' + id)
+    deletePost(id, {
+      onSuccess: (data) => {
+        setPostHasBeenDeleted(true)
+      }
+    })
   }
 
   return (

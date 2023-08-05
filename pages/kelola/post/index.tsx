@@ -64,21 +64,29 @@ const DashboardPost: NextPage<TProps> = ({ user }) => {
     includeAnonymous: true
   })
 
-
   const [selectedPost, setSelectedPost] = useState<TSelectedPost | null>(null)
 
   const [openEditMenu, setOpenEditMenu] = useState(false)
+
   const [postHasBeenEdited, setPostHasBeenEdited] = useState(false)
+  const [postHasBeenDeleted, setPostHasBeenDeleted] = useState(false)
   const [responseData, setResponseData] = useState<TResponseData | null>(null)
 
   useEffect(() => {
     if (postHasBeenEdited) {
       postRefetch()
-      console.log(responseData)
 
       if (!openEditMenu) setResponseData(null)
     }
   }, [postHasBeenEdited, openEditMenu])
+
+  useEffect(() => {
+    if (postHasBeenDeleted) {
+      postRefetch()
+
+      setPostHasBeenDeleted(false)
+    }
+  }, [postHasBeenDeleted])
 
   return (
     <>
@@ -115,7 +123,7 @@ const DashboardPost: NextPage<TProps> = ({ user }) => {
                   }>
                     {postResponse?.data?.map((post, idx) => (
                       <li key={idx}>
-                        <CardForum {...{ ...post, setOpenEditMenu, setSelectedPost }} />
+                        <CardForum {...{ ...post, setOpenEditMenu, setSelectedPost, setPostHasBeenDeleted }} />
                       </li>
                     ))}
                   </Empty>

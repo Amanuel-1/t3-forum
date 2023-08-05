@@ -58,12 +58,12 @@ const EditPostForm: React.FC<TProps> = ({ userId, postId, content, isAnonymous, 
   const activeAlert = error || responseData
 
   const submitHandler = (values: z.infer<typeof formSchema>) => {
-    console.log({
-      ...values,
-      userId: currentUserId,
-      postId: currentPostId,
-      isAnonymPost: anonymousMode
-    })
+    // console.log({
+    //   ...values,
+    //   userId: currentUserId,
+    //   postId: currentPostId,
+    //   isAnonymPost: anonymousMode
+    // })
 
     editPost({
       ...values,

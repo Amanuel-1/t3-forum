@@ -354,5 +354,26 @@ export const postRouter = router({
         status: 201,
         message: 'Postingan lu berhasil gua update'
       }, updatedPost)
+    }),
+  delete: procedure
+    .input(z.string())
+    .mutation(async ({ input, ctx }) => {
+      const postId = input
+
+      const deletedPost = await ctx.prisma.post.delete({
+        where: {
+          id: postId
+        }
+      })
+
+      if(!deletedPost) return apiResponse({
+        status: 400,
+        message: 'Post nya gk bisa di delete :('
+      })
+
+      return apiResponse({
+        status: 200,
+        message: 'Berhasil meng-delete postingan lu'
+      }, deletedPost)
     })
 })
