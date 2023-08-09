@@ -2,6 +2,8 @@ import { User } from "@prisma/client"
 import { type ClassValue, clsx } from "clsx"
 import { jwtVerify } from "jose"
 import { twMerge } from "tailwind-merge"
+import { generateReactHelpers } from '@uploadthing/react/hooks'
+import { type uploadFileRouter } from "@/server/uploadthing"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -83,3 +85,5 @@ export type TSelectedPost = {
   content: string,
   userId: string
 }
+
+export const { useUploadThing, uploadFiles } = generateReactHelpers<uploadFileRouter>()

@@ -1,7 +1,5 @@
 import { prisma } from '@/prisma/db'
 import { initTRPC, inferAsyncReturnType } from '@trpc/server'
-import { createServerSideHelpers } from '@trpc/react-query/server'
-import { appRouter } from './routers/_app'
 
 export const createContext = async () => {
   return {

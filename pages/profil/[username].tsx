@@ -82,7 +82,6 @@ const ProfileDetail: NextPage<TProps> = ({ username, user }) => {
           <SubMenuHeader backUrl='/forum' title='Profil' data={userResponse?.data?.username} />
 
           <div className='container'>
-
             <div className='flex items-start gap-4 py-4'>
               {/** Preview Image */}
               <Avatar className='cursor-pointer w-14 h-14 rounded-md'>

@@ -10,7 +10,6 @@ import { useAnonymousStore } from '@/lib/store'
 import { Skeleton } from '@/components/ui/skeleton'
 import CardForum from '@/components/reusable/forum/CardForum'
 import Loading from '@/components/reusable/skeleton/Loading'
-import RefetchData from '@/components/reusable/global/RefetchData'
 
 const CardSkeleton = () => {
   return (
