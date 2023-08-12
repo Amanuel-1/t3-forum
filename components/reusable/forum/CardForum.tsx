@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { AlertOctagon, Forward, MessagesSquare } from 'lucide-react'
@@ -12,13 +12,14 @@ type TProps = {
   content: string,
   createdAt: string,
   User?: {
-    name: string;
-    username: string;
-    id: string;
+    name: string
+    username: string,
+    image: string | null,
+    id: string
   } | null,
   Anonymous?: {
-    username: string;
-    id: string;
+    username: string
+    id: string
   } | null
 }
 
@@ -26,17 +27,29 @@ const CardForum: React.FC<TProps> = ({ id, content, User, createdAt, Anonymous }
 
   const router = useRouter()
 
+  const getMeta = (createdAt: string) => {
+    const formattedDate = new Date(createdAt)
+      .toLocaleString('id')
+      .replaceAll('/', '-')
+      .replaceAll('.', ':')
+      .split('')
+
+    formattedDate.splice(-3, 3)
+
+    return formattedDate.join('')
+  }
+
   return (
     <Card>
       <CardHeader className='px-4 py-2'>
 
         <CardTitle onClick={() => {
-          if(!Anonymous) router.push('/profil/' + User?.username)
+          if (!Anonymous) router.push('/profil/' + User?.username)
         }} className={`${Anonymous ? 'cursor-default' : 'cursor-pointer'} flex items-center gap-4`}>
 
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarImage src={User?.image ?? ''} alt="@shadcn" />
+            <AvatarFallback>{User ? User.username[0].toUpperCase() : Anonymous ? Anonymous.username[3].toUpperCase() : 'K'}</AvatarFallback>
           </Avatar>
           <div>
             <p className='font-bold text-base'>{User ? User.name : 'Anonymous'}</p>
@@ -44,6 +57,10 @@ const CardForum: React.FC<TProps> = ({ id, content, User, createdAt, Anonymous }
           </div>
 
         </CardTitle>
+
+        <CardDescription className='pt-2'>
+          Dibuat {getMeta(createdAt)}
+        </CardDescription>
 
       </CardHeader>
       <CardContent className='px-4 py-2'>

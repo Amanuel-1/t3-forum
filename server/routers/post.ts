@@ -14,6 +14,7 @@ export const postRouter = router({
             select: {
               name: true,
               username: true,
+              image: true,
               id: true
             }
           },
@@ -54,6 +55,7 @@ export const postRouter = router({
             select: {
               id: true,
               name: true,
+              image: true,
               username: true
             }
           },
@@ -170,6 +172,7 @@ export const postRouter = router({
             select: {
               name: true,
               username: true,
+              image: true,
               id: true
             }
           },

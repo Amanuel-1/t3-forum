@@ -12,6 +12,7 @@ type TProps = {
   user: {
     username: string,
     name: string,
+    image: string | null
   },
   openMenu: boolean,
   setOpenMenu: (value: React.SetStateAction<boolean>) => void,
@@ -114,12 +115,12 @@ const AsideSection: React.FC<TProps> = ({ setOpenMenu, openMenu, user }) => {
         <div className='flex items-center justify-between gap-4'>
           <div className='flex items-center gap-4'>
             <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarImage src={user && user.image || ''} alt="@shadcn" />
+              <AvatarFallback>{user && user.username[0].toUpperCase()}</AvatarFallback>
             </Avatar>
             <div>
-              <p className='font-bold'>{user.username}</p>
-              <Link href={`/profil/${user.username}`} className='text-sm text-foreground/60 mt-0 hover:underline'>Lihat Profil</Link>
+              <p className='font-bold'>{user?.username}</p>
+              <Link href={`/profil/${user?.username}`} className='text-sm text-foreground/60 mt-0 hover:underline'>Lihat Profil</Link>
             </div>
           </div>
 

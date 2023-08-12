@@ -54,6 +54,7 @@ type TProps = {
     id: string,
     username: string,
     name: string,
+    image: string,
   }
 }
 
@@ -79,14 +80,14 @@ const ProfileDetail: NextPage<TProps> = ({ username, user }) => {
       <Layout user={user}>
         <main className='bg-background text-foreground selection:bg-foreground selection:text-background pb-10'>
 
-          <SubMenuHeader backUrl='/forum' title='Profil' data={userResponse?.data?.username} />
+          <SubMenuHeader backUrl='/forum' title='Profil' data={userResponse?.data?.username || null} />
 
           <div className='container'>
             <div className='flex items-start gap-4 py-4'>
               {/** Preview Image */}
               <Avatar className='cursor-pointer w-14 h-14 rounded-md'>
-                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                <AvatarFallback>CN</AvatarFallback>
+                <AvatarImage src={userResponse?.data?.image || ''} alt="@shadcn" />
+                <AvatarFallback>{`${userResponse?.data?.username[0]}`.toUpperCase()}</AvatarFallback>
               </Avatar>
               <Loading data={userResponse?.data} skeletonFallback={<UserDataSkeleton />}>
                 <div>

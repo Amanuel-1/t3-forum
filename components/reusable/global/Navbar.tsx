@@ -5,10 +5,11 @@ import { useRouter } from 'next/router'
 import React from 'react'
 
 type TProps = {
-  username: string
+  username: string,
+  image: string | null
 }
 
-const Navbar: React.FC<TProps> = ({ username }) => {
+const Navbar: React.FC<TProps> = ({ username, image }) => {
   const router = useRouter()
 
   return (
@@ -23,8 +24,8 @@ const Navbar: React.FC<TProps> = ({ username }) => {
           <Tooltip>
             <TooltipTrigger>
               <Avatar onClick={() => router.push('/profil/' + username)} className='cursor-pointer'>
-                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                <AvatarFallback>CN</AvatarFallback>
+                <AvatarImage src={image ?? ''} alt="@shadcn" />
+                <AvatarFallback>{username[0].toUpperCase()}</AvatarFallback>
               </Avatar>
             </TooltipTrigger>
             <TooltipContent>

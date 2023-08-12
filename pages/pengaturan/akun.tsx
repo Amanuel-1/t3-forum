@@ -16,6 +16,7 @@ import superjson from 'superjson'
 import Loading from '@/components/reusable/skeleton/Loading'
 import { Skeleton } from '@/components/ui/skeleton'
 import RefetchData from '@/components/reusable/global/RefetchData'
+import EditProfilePicture from '@/components/reusable/akun/EditProfilePicture'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const user = await getAuthUser(ctx.req.cookies?.token!)
@@ -60,6 +61,8 @@ const PengaturanAkun: NextPage<TProps> = ({ user }) => {
   const [openEditMenu, setOpenEditMenu] = useState(false)
   const [profileHasBeenEdited, setProfileHasBeenEdited] = useState(false)
 
+  const [openEditPictMenu, setOpenEditPictMenu] = useState(false)
+
   const [responseData, setResponseData] = useState<TResponseData | null>(null)
 
   const { data: userResponse, isRefetching, refetch: userRefetch } = trpc.user.profile.useQuery({
@@ -84,6 +87,8 @@ const PengaturanAkun: NextPage<TProps> = ({ user }) => {
           <SubMenuHeader backUrl='/forum' title='Pengaturan Akun' data={user.username} />
           <RefetchData isRefetching={isRefetching} />
 
+          <EditProfilePicture {...{ openEditPictMenu, setOpenEditPictMenu, setProfileHasBeenEdited, user }} />
+
           <div className='relative'>
 
             <EditAccountForm user={user} {...{ openEditMenu, setOpenEditMenu, setProfileHasBeenEdited, responseData, setResponseData }} />
@@ -91,9 +96,9 @@ const PengaturanAkun: NextPage<TProps> = ({ user }) => {
             <div className='container'>
               <div className='flex items-start gap-4 py-4'>
                 {/** Preview Image */}
-                <Avatar className='cursor-pointer w-14 h-14 rounded-md'>
-                  <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                  <AvatarFallback>CN</AvatarFallback>
+                <Avatar onClick={() => setOpenEditPictMenu(true)} className='cursor-pointer w-14 h-14 rounded-md'>
+                  <AvatarImage src={userResponse?.data?.image ?? ''} alt="@shadcn" />
+                  <AvatarFallback>{user.username[0].toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div>
                   <h2 className='text-lg font-bold'>Ubah Foto Profil</h2>

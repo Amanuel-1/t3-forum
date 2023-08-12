@@ -68,7 +68,7 @@ const Login: NextPage = () => {
           {activeAlert && (
             <Alert className='w-full'>
               <AlertTitle className='tracking-wide'>Notifikasi</AlertTitle>
-              <AlertDescription>{error ? trimErrMessage(error.message, 4) : response?.message}</AlertDescription>
+              <AlertDescription>{error ? 'Duh error bre' : response?.message}</AlertDescription>
             </Alert>
           )}
 
