@@ -16,5 +16,6 @@
 - [x] Anonym Post
 - [x] Halaman Profil
 - [x] Event route change (redirect feedback for UX)
-- [ ] Crud Post
-- [ ] Edit Profil
+- [x] Crud Post
+- [x] Edit Profil
+- [ ] bug: bisa upload pp duplikat (uploadthing gw penuh bjir)
