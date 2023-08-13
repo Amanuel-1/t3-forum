@@ -5,12 +5,20 @@ import { z } from 'zod'
 export const userRouter = router({
   profile: procedure
     .input(z.object({
-      username: z.string()
+      username: z.string(),
+      id: z.string().optional()
     }))
     .query(async ({ input, ctx }) => {
-      const { username } = input
+      const { username, id } = input
       const userExist = await ctx.prisma.user.findUnique({
-        where: { username }
+        where: id ? { id } : { username },
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          bio: true,
+          image: true,
+        }
       })
 
       if (!userExist) return apiResponse({
@@ -21,7 +29,7 @@ export const userRouter = router({
       return apiResponse({
         status: 200,
         message: 'Ada nih'
-      }, excludeFields(userExist, ['password']))
+      }, userExist)
     }),
   editAccount: procedure
     .input(z.object({
@@ -37,7 +45,7 @@ export const userRouter = router({
         where: { username }
       })
 
-      if(!updatedUser) return apiResponse({
+      if (!updatedUser) return apiResponse({
         status: 400,
         message: 'Aduh lagi gk bisa ngedit user bre'
       })

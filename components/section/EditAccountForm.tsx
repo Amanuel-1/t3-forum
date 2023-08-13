@@ -10,6 +10,7 @@ import { trpc } from '@/utils/trpc'
 import { Textarea } from '../ui/textarea'
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert'
 import { TResponseData } from '@/lib/utils'
+import { useCurrentUserStore } from '@/lib/store'
 
 const formSchema = z.object({
   username: z.string().min(3, {
@@ -28,13 +29,6 @@ const formSchema = z.object({
 })
 
 type TProps = {
-  user: {
-    id: string,
-    username: string,
-    name: string,
-    bio: string | null,
-    image: string | null
-  },
   openEditMenu: boolean,
   responseData: TResponseData | null,
   setProfileHasBeenEdited: (value: React.SetStateAction<boolean>) => void,
@@ -43,22 +37,24 @@ type TProps = {
 }
 
 
-const EditAccountForm: React.FC<TProps> = ({ user, openEditMenu, responseData, setResponseData, setOpenEditMenu, setProfileHasBeenEdited }) => {
+const EditAccountForm: React.FC<TProps> = ({ openEditMenu, responseData, setResponseData, setOpenEditMenu, setProfileHasBeenEdited }) => {
   const { isLoading, mutate: editUser, error } = trpc.user.editAccount.useMutation()
+
+  const user = useCurrentUserStore((state) => state.user)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: user.name,
-      username: user.username,
-      bio: user.bio || ''
+      name: user?.name,
+      username: user?.username,
+      bio: user?.bio || ''
     }
   })
 
   const activeAlert = error || responseData
 
   const submitHandler = (values: z.infer<typeof formSchema>) => {
-    editUser({ ...values, image: null }, {
+    editUser({ ...values, image: user.image }, {
       onSuccess: (data) => {
         setProfileHasBeenEdited(true)
         setResponseData(data)

@@ -101,7 +101,10 @@ export const postRouter = router({
               userId,
               username: 'si-' + generateRandomStr(4),
               Post: {
-                create: { content }
+                create: { 
+                  content,
+                  categoryId: 1
+                }
               }
             },
           })
@@ -138,7 +141,9 @@ export const postRouter = router({
       // Create Post Publically
       const createdPost = await ctx.prisma.post.create({
         data: {
-          content, userId
+          content, 
+          userId,
+          categoryId: 1
         }
       })
 

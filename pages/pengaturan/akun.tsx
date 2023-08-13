@@ -17,6 +17,7 @@ import Loading from '@/components/reusable/skeleton/Loading'
 import { Skeleton } from '@/components/ui/skeleton'
 import RefetchData from '@/components/reusable/global/RefetchData'
 import EditProfilePicture from '@/components/reusable/akun/EditProfilePicture'
+import { useCurrentUserStore } from '@/lib/store'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const user = await getAuthUser(ctx.req.cookies?.token!)
@@ -37,6 +38,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     ctx: await createContext(),
     transformer: superjson
   })
+
   await helpers.user.profile.prefetch({ username: user.username as string })
 
   return {
@@ -58,6 +60,8 @@ type TProps = {
 }
 
 const PengaturanAkun: NextPage<TProps> = ({ user }) => {
+  const { user: currentUser, setUser } = useCurrentUserStore((state) => state)
+
   const [openEditMenu, setOpenEditMenu] = useState(false)
   const [profileHasBeenEdited, setProfileHasBeenEdited] = useState(false)
 
@@ -70,11 +74,23 @@ const PengaturanAkun: NextPage<TProps> = ({ user }) => {
   })
 
   useEffect(() => {
+    setUser(user)
+
+    if (userResponse?.data) {
+      setUser(userResponse.data)
+    }
+
     if (profileHasBeenEdited) {
-      userRefetch()
+      userRefetch().then((res) => {
+        if (res.data?.data) {
+          console.log('new user')
+          setUser(res.data.data)
+        }
+      })
       if (!openEditMenu) setResponseData(null)
     }
-  }, [profileHasBeenEdited, openEditMenu])
+
+  }, [profileHasBeenEdited, openEditMenu, userResponse])
 
   return (
     <>
@@ -87,11 +103,11 @@ const PengaturanAkun: NextPage<TProps> = ({ user }) => {
           <SubMenuHeader backUrl='/forum' title='Pengaturan Akun' data={user.username} />
           <RefetchData isRefetching={isRefetching} />
 
-          <EditProfilePicture {...{ openEditPictMenu, setOpenEditPictMenu, setProfileHasBeenEdited, user }} />
+          <EditProfilePicture {...{ openEditPictMenu, setOpenEditPictMenu, setProfileHasBeenEdited, user: currentUser ?? user }} />
 
           <div className='relative'>
 
-            <EditAccountForm user={user} {...{ openEditMenu, setOpenEditMenu, setProfileHasBeenEdited, responseData, setResponseData }} />
+            <EditAccountForm {...{ openEditMenu, setOpenEditMenu, setProfileHasBeenEdited, responseData, setResponseData }} />
 
             <div className='container'>
               <div className='flex items-start gap-4 py-4'>

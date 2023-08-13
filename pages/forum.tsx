@@ -76,13 +76,21 @@ const Forum: NextPage<TProps> = ({ user }) => {
         </div>
 
         <ul className='py-4 pb-20 space-y-4 container'>
-          <Loading data={posts.data?.data} skeletonFallback={<CardSkeleton />}>
-            {posts.data?.data?.map((post, idx) => (
-              <li key={idx}>
-                <CardForum {...post} />
-              </li>
-            ))}
-          </Loading>
+          {
+            posts.data?.status === 404
+              ? (
+                <li className='py-2 px-4 text-primary bg-secondary w-max rounded'>Kosong Bang</li>
+              )
+              : (
+                <Loading data={posts.data?.data} skeletonFallback={<CardSkeleton />}>
+                  {posts.data?.data?.map((post, idx) => (
+                    <li key={idx}>
+                      <CardForum {...post} />
+                    </li>
+                  ))}
+                </Loading>
+              )
+          }
         </ul>
       </Layout>
     </>
