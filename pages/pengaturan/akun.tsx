@@ -97,7 +97,7 @@ const PengaturanAkun: NextPage<TProps> = ({ user }) => {
               <div className='flex items-start gap-4 py-4'>
                 {/** Preview Image */}
                 <Avatar onClick={() => setOpenEditPictMenu(true)} className='cursor-pointer w-14 h-14 rounded-md'>
-                  <AvatarImage src={userResponse?.data?.image ?? ''} alt="@shadcn" />
+                  <AvatarImage src={(userResponse?.data?.image || null) ?? ''} alt="@shadcn" />
                   <AvatarFallback>{user.username[0].toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div>

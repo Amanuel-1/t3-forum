@@ -115,8 +115,8 @@ const AsideSection: React.FC<TProps> = ({ setOpenMenu, openMenu, user }) => {
         <div className='flex items-center justify-between gap-4'>
           <div className='flex items-center gap-4'>
             <Avatar>
-              <AvatarImage src={user && user.image || ''} alt="@shadcn" />
-              <AvatarFallback>{user && user.username[0].toUpperCase()}</AvatarFallback>
+              <AvatarImage src={user?.image || ''} alt="@shadcn" />
+              <AvatarFallback>{`${user?.username[0] || ''}`.toUpperCase()}</AvatarFallback>
             </Avatar>
             <div>
               <p className='font-bold'>{user?.username}</p>

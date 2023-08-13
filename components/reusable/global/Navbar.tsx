@@ -25,7 +25,7 @@ const Navbar: React.FC<TProps> = ({ username, image }) => {
             <TooltipTrigger>
               <Avatar onClick={() => router.push('/profil/' + username)} className='cursor-pointer'>
                 <AvatarImage src={image ?? ''} alt="@shadcn" />
-                <AvatarFallback>{username[0].toUpperCase()}</AvatarFallback>
+                <AvatarFallback>{`${username[0] || ''}`.toUpperCase()}</AvatarFallback>
               </Avatar>
             </TooltipTrigger>
             <TooltipContent>

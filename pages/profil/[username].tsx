@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { trpc } from '@/utils/trpc'
 import { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
-import React from 'react'
+import React, { useState } from 'react'
 import { Separator } from '@/components/ui/separator'
 import CardForum from '@/components/reusable/forum/CardForum'
 import { getAuthUser } from '@/lib/utils'
@@ -15,6 +15,7 @@ import superjson from 'superjson'
 import { Skeleton } from '@/components/ui/skeleton'
 import Loading from '@/components/reusable/skeleton/Loading'
 import Empty from '@/components/reusable/skeleton/Empty'
+import SeeProfilePict from '@/components/reusable/profil/SeeProfilePict'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { username } = ctx.query
@@ -69,8 +70,10 @@ const UserDataSkeleton: React.FC = () => {
 
 const ProfileDetail: NextPage<TProps> = ({ username, user }) => {
 
-  const { error: userError, data: userResponse } = trpc.user.profile.useQuery({ username })
-  const { error: postError, data: postResponse } = trpc.post.user.useQuery({ username })
+  const { data: userResponse } = trpc.user.profile.useQuery({ username })
+  const { data: postResponse } = trpc.post.user.useQuery({ username })
+
+  const [seeProfilePict, setSeeProfilePict] = useState(false)
 
   return (
     <>
@@ -79,15 +82,16 @@ const ProfileDetail: NextPage<TProps> = ({ username, user }) => {
       </Head>
       <Layout user={user}>
         <main className='bg-background text-foreground selection:bg-foreground selection:text-background pb-10'>
-
+          
+          <SeeProfilePict image={userResponse?.data?.image || ''} {...{ setSeeProfilePict, seeProfilePict }} />
           <SubMenuHeader backUrl='/forum' title='Profil' data={userResponse?.data?.username || null} />
 
           <div className='container'>
             <div className='flex items-start gap-4 py-4'>
               {/** Preview Image */}
               <Avatar className='cursor-pointer w-14 h-14 rounded-md'>
-                <AvatarImage src={userResponse?.data?.image || ''} alt="@shadcn" />
-                <AvatarFallback>{`${userResponse?.data?.username[0]}`.toUpperCase()}</AvatarFallback>
+                <AvatarImage onClick={() => setSeeProfilePict(true)} src={(userResponse?.data?.image || null) ?? ''} alt="@shadcn" />
+                <AvatarFallback>{`${userResponse?.data?.username[0] || ''}`.toUpperCase()}</AvatarFallback>
               </Avatar>
               <Loading data={userResponse?.data} skeletonFallback={<UserDataSkeleton />}>
                 <div>

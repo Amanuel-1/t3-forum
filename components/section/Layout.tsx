@@ -21,7 +21,7 @@ const Layout: React.FC<TProps> = ({ user, children }) => {
   return (
     <div className='bg-background text-foreground selection:bg-foreground selection:text-background'>
 
-      <Navbar username={response?.data?.username || 'k'} image={response?.data?.image || null} />
+      <Navbar username={response?.data?.username || ''} image={response?.data?.image || null} />
 
       <div className='flex relative items-start lg:container'>
 
