@@ -17,7 +17,7 @@ import Loading from '@/components/reusable/skeleton/Loading'
 import { Skeleton } from '@/components/ui/skeleton'
 import RefetchData from '@/components/reusable/global/RefetchData'
 import EditProfilePicture from '@/components/reusable/akun/EditProfilePicture'
-import { useCurrentUserStore } from '@/lib/store'
+import { useUser } from '@/lib/hooks'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const user = await getAuthUser(ctx.req.cookies?.token!)
@@ -60,7 +60,7 @@ type TProps = {
 }
 
 const PengaturanAkun: NextPage<TProps> = ({ user }) => {
-  const { user: currentUser, setUser } = useCurrentUserStore((state) => state)
+  const { user: currentUser, setUser } = useUser(user)
 
   const [openEditMenu, setOpenEditMenu] = useState(false)
   const [profileHasBeenEdited, setProfileHasBeenEdited] = useState(false)
@@ -69,17 +69,11 @@ const PengaturanAkun: NextPage<TProps> = ({ user }) => {
 
   const [responseData, setResponseData] = useState<TResponseData | null>(null)
 
-  const { data: userResponse, isRefetching, refetch: userRefetch } = trpc.user.profile.useQuery({
+  const { isRefetching, refetch: userRefetch, data: userResponse } = trpc.user.profile.useQuery({
     username: user.username
   })
 
   useEffect(() => {
-    setUser(user)
-
-    if (userResponse?.data) {
-      setUser(userResponse.data)
-    }
-
     if (profileHasBeenEdited) {
       userRefetch().then((res) => {
         if (res.data?.data) {
@@ -90,7 +84,7 @@ const PengaturanAkun: NextPage<TProps> = ({ user }) => {
       if (!openEditMenu) setResponseData(null)
     }
 
-  }, [profileHasBeenEdited, openEditMenu, userResponse])
+  }, [profileHasBeenEdited, openEditPictMenu, openEditMenu, userResponse])
 
   return (
     <>
@@ -100,10 +94,10 @@ const PengaturanAkun: NextPage<TProps> = ({ user }) => {
       <Layout user={user}>
         <main className='bg-background text-foreground selection:bg-foreground selection:text-background'>
 
-          <SubMenuHeader backUrl='/forum' title='Pengaturan Akun' data={user.username} />
+          <SubMenuHeader backUrl='/forum' title='Pengaturan Akun' data={currentUser.username} />
           <RefetchData isRefetching={isRefetching} />
 
-          <EditProfilePicture {...{ openEditPictMenu, setOpenEditPictMenu, setProfileHasBeenEdited, user: currentUser ?? user }} />
+          <EditProfilePicture {...{ openEditPictMenu, setOpenEditPictMenu, setProfileHasBeenEdited, user: currentUser }} />
 
           <div className='relative'>
 
@@ -113,8 +107,8 @@ const PengaturanAkun: NextPage<TProps> = ({ user }) => {
               <div className='flex items-start gap-4 py-4'>
                 {/** Preview Image */}
                 <Avatar onClick={() => setOpenEditPictMenu(true)} className='cursor-pointer w-14 h-14 rounded-md'>
-                  <AvatarImage src={(userResponse?.data?.image || null) ?? ''} alt="@shadcn" />
-                  <AvatarFallback>{user.username[0].toUpperCase()}</AvatarFallback>
+                  <AvatarImage src={(currentUser.image || null) ?? ''} alt="@shadcn" />
+                  <AvatarFallback>{currentUser.username[0].toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div>
                   <h2 className='text-lg font-bold'>Ubah Foto Profil</h2>
@@ -126,22 +120,22 @@ const PengaturanAkun: NextPage<TProps> = ({ user }) => {
 
               <div className='mt-2'>
                 <h2 className='text-lg font-bold'>Nama Lengkap</h2>
-                <Loading data={userResponse?.data?.name} skeletonFallback={<Skeleton className='w-24 p-2 rounded-md mt-2' />}>
-                  <p className={`mt-2`}>{userResponse?.data?.name}</p>
+                <Loading data={currentUser.name} skeletonFallback={<Skeleton className='w-24 p-2 rounded-md mt-2' />}>
+                  <p className={`mt-2`}>{currentUser.name}</p>
                 </Loading>
               </div>
 
               <div className='mt-2'>
                 <h2 className='text-lg font-bold'>Username</h2>
-                <Loading data={userResponse?.data?.username} skeletonFallback={<Skeleton className='w-24 p-2 rounded-md mt-2' />}>
-                  <p className={`mt-2`}>{userResponse?.data?.username}</p>
+                <Loading data={currentUser.username} skeletonFallback={<Skeleton className='w-24 p-2 rounded-md mt-2' />}>
+                  <p className={`mt-2`}>{currentUser.username}</p>
                 </Loading>
               </div>
 
               <div className='mt-2'>
                 <h2 className='text-lg font-bold'>Bio</h2>
-                <Loading data={userResponse?.data} skeletonFallback={<Skeleton className='w-24 p-2 rounded-md mt-2' />}>
-                  <p className={`mt-2 ${userResponse?.data?.bio ? '' : 'text-foreground/60'}`}>{userResponse?.data?.bio || 'Kosong'}</p>
+                <Loading data={currentUser.bio} skeletonFallback={<Skeleton className='w-24 p-2 rounded-md mt-2' />}>
+                  <p className={`mt-2 ${currentUser.bio ? '' : 'text-foreground/60'}`}>{currentUser.bio || 'Kosong'}</p>
                 </Loading>
               </div>
 
