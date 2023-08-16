@@ -54,7 +54,7 @@ const EditAccountForm: React.FC<TProps> = ({ openEditMenu, responseData, setResp
   const activeAlert = error || responseData
 
   const submitHandler = (values: z.infer<typeof formSchema>) => {
-    editUser({ ...values, image: user.image }, {
+    editUser({ ...values, image: user?.image || null }, {
       onSuccess: (data) => {
         setProfileHasBeenEdited(true)
         setResponseData(data)
