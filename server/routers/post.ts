@@ -88,6 +88,7 @@ export const postRouter = router({
         },
         select: {
           id: true,
+          categoryId: true,
           content: true,
           createdAt: true,
           User: {
@@ -216,6 +217,7 @@ export const postRouter = router({
         select: {
           id: true,
           content: true,
+          categoryId: true,
           createdAt: true,
           User: {
             select: {
@@ -245,6 +247,7 @@ export const postRouter = router({
           select: {
             id: true,
             content: true,
+            categoryId: true,
             createdAt: true,
             Anonymous: {
               select: {

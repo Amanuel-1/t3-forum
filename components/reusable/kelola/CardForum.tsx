@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { usePostCategory } from '@/lib/store'
 import { TSelectedPost } from '@/lib/utils'
 import { trpc } from '@/utils/trpc'
 import { PenBox, Trash2 } from 'lucide-react'
@@ -12,6 +13,7 @@ import React from 'react'
 
 type TProps = {
   id: string,
+  categoryId: number,
   content: string,
   createdAt: string,
   User?: {
@@ -29,9 +31,10 @@ type TProps = {
   setPostHasBeenDeleted: (value: React.SetStateAction<boolean>) => void
 }
 
-const CardForum: React.FC<TProps> = ({ id, content, User, createdAt, Anonymous, setOpenEditMenu, setSelectedPost, setPostHasBeenDeleted }) => {
+const CardForum: React.FC<TProps> = ({ id, content, categoryId, User, createdAt, Anonymous, setOpenEditMenu, setSelectedPost, setPostHasBeenDeleted }) => {
 
   const { mutate: deletePost } = trpc.post.delete.useMutation()
+  const { setCategoryId } = usePostCategory(state => state)
 
   const router = useRouter()
   const deletePostHandler = () => {
@@ -90,8 +93,9 @@ const CardForum: React.FC<TProps> = ({ id, content, User, createdAt, Anonymous, 
               <Button variant='outline' onClick={() => {
                 setOpenEditMenu(true)
                 setSelectedPost({
-                  id, content, userId: User?.id!
+                  id, content, userId: User?.id!, categoryId
                 })
+                setCategoryId(categoryId === 1 ? "1" : "2")
               }}>
                 <PenBox className='w-5 aspect-square' />
               </Button>

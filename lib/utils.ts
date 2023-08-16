@@ -83,6 +83,7 @@ export function trimErrMessage(message: string, wordLength: number) {
 export type TSelectedPost = {
   id: string,
   content: string,
+  categoryId: number,
   userId: string
 }
 
