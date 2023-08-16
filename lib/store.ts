@@ -18,6 +18,11 @@ type TCurrentUserStore = {
   setUser: (user: TUser) => void,
 }
 
+type TPostCategory = {
+  categoryId: "1" | "2",
+  setCategoryId: (categoryId: "1" | "2") => void
+}
+
 export const useAnonymousStore = create<TAnonymousStore>((set) => ({
   isAnonymPost: false,
   setIsAnonymPost: (isAnonymPost) => set((state) => ({ isAnonymPost })),
@@ -26,4 +31,9 @@ export const useAnonymousStore = create<TAnonymousStore>((set) => ({
 export const useCurrentUserStore = create<TCurrentUserStore>((set) => ({
   user: null,
   setUser: (user) => set((state) => ({ user }))
+}))
+
+export const usePostCategory = create<TPostCategory>((set) => ({
+  categoryId: "1",
+  setCategoryId: (categoryId) => set((state) => ({ categoryId }))
 }))

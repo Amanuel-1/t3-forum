@@ -10,9 +10,12 @@ import { trpc } from '@/utils/trpc'
 import { Loader2 } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
+import { usePostCategory } from '@/lib/store'
+import { Badge } from '../ui/badge'
 
 type TProps = {
   userId: string,
+  username: string,
   isAnonymPost: boolean
   openCreatePostInput: boolean,
   setOpenCreatePostInput: (value: React.SetStateAction<boolean>) => void
@@ -21,13 +24,17 @@ type TProps = {
 const formSchema = z.object({
   content: z.string().min(3).max(255),
   userId: z.string(),
+  categoryId: z.enum(["1", "2"]),
 })
 
-const CreatePostSection: React.FC<TProps> = ({ openCreatePostInput, setOpenCreatePostInput, userId, isAnonymPost }) => {
+const CreatePostSection: React.FC<TProps> = ({ openCreatePostInput, setOpenCreatePostInput, userId, username, isAnonymPost }) => {
+  const { categoryId } = usePostCategory(state => state)
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       content: '',
+      categoryId,
       userId
     }
   })
@@ -52,9 +59,11 @@ const CreatePostSection: React.FC<TProps> = ({ openCreatePostInput, setOpenCreat
   }
 
   useEffect(() => {
+    form.setValue('categoryId', username === 'adicss' ? categoryId : '1')
+
     if (openCreatePostInput) form.setFocus('content')
     if (!openCreatePostInput) setActiveAlert(false)
-  }, [openCreatePostInput, form])
+  }, [openCreatePostInput, form, categoryId])
 
   return (
     <div className={`fixed inset-0 z-20 transition-all bg-secondary/40 backdrop-blur-md flex flex-col justify-center items-center ${openCreatePostInput ? 'translate-y-0' : 'translate-y-[200%]'}`}>
@@ -72,7 +81,7 @@ const CreatePostSection: React.FC<TProps> = ({ openCreatePostInput, setOpenCreat
 
           <h1 className='text-2xl flex justify-between items-center font-bold'>
             <span>Buat Postingan</span>
-            <span className='text-md'>🚀</span>
+            {categoryId === "2" && username === 'adicss' ? (<Badge>Dev Post</Badge>) : (<span className='text-md'>🚀</span>)}
           </h1>
 
           <TooltipProvider>

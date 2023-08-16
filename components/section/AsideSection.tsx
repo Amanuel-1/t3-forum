@@ -1,12 +1,12 @@
 import { ArrowLeftRight, Blinds, Bug, ChevronDown, Globe, LogOut, TrendingUp, User, VenetianMask } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Separator } from '../ui/separator'
 import Link from 'next/link'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { Button } from '../ui/button'
 import { useRouter } from 'next/router'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
-import { useAnonymousStore } from '@/lib/store'
+import { useAnonymousStore, usePostCategory } from '@/lib/store'
 
 type TProps = {
   user: {
@@ -21,9 +21,18 @@ type TProps = {
 const AsideSection: React.FC<TProps> = ({ setOpenMenu, openMenu, user }) => {
 
   const [menu, setMenu] = useState('fyp')
-  const { isAnonymPost, setIsAnonymPost } = useAnonymousStore((state) => ({ ...state }))
+  const { isAnonymPost, setIsAnonymPost } = useAnonymousStore(state => state)
+  const { categoryId, setCategoryId } = usePostCategory(state => state)
 
   const router = useRouter()
+
+  useEffect(() => {
+    setCategoryId("1")
+
+    if (menu === 'fyp') setCategoryId("1")
+    if (menu === 'dev') setCategoryId("2")
+
+  }, [menu, user])
 
   const logoutHandler = async () => {
     const req = await fetch('/api/cookie/destroy', {

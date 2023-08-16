@@ -78,14 +78,54 @@ export const postRouter = router({
         message: 'Postingan ada ni'
       }, existingPost)
     }),
+  byCategory: procedure
+    .input(z.enum(["1", "2"]))
+    .query(async ({ ctx, input }) => {
+      const categoryId = input
+      const existingPost = await ctx.prisma.post.findMany({
+        where: {
+          categoryId: +categoryId
+        },
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+          User: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+              username: true
+            }
+          },
+          Anonymous: {
+            select: {
+              id: true,
+              username: true
+            }
+          }
+        }
+      })
+
+      if (!existingPost) return apiResponse({
+        status: 404,
+        message: 'Duh g ada bre'
+      }, [])
+
+      return apiResponse({
+        status: 200,
+        message: 'Ada ni post nya'
+      }, existingPost)
+    }),
   store: procedure
     .input(z.object({
       content: z.string().min(3).max(255),
       userId: z.string(),
       isAnonymPost: z.boolean(),
+      categoryId: z.enum(['1', '2']).default('1')
     }))
     .mutation(async ({ ctx, input }) => {
-      const { content, userId, isAnonymPost } = input
+      const { content, userId, isAnonymPost, categoryId } = input
 
       // Create Post anonymous-ly
       if (isAnonymPost) {
@@ -101,9 +141,9 @@ export const postRouter = router({
               userId,
               username: 'si-' + generateRandomStr(4),
               Post: {
-                create: { 
+                create: {
                   content,
-                  categoryId: 1
+                  categoryId: +categoryId
                 }
               }
             },
@@ -124,6 +164,7 @@ export const postRouter = router({
           data: {
             anonymousId: anonymousUserExist.id,
             content,
+            categoryId: +categoryId
           }
         })
 
@@ -141,9 +182,9 @@ export const postRouter = router({
       // Create Post Publically
       const createdPost = await ctx.prisma.post.create({
         data: {
-          content, 
+          content,
           userId,
-          categoryId: 1
+          categoryId: +categoryId
         }
       })
 
@@ -231,10 +272,11 @@ export const postRouter = router({
       content: z.string().min(3).max(255),
       userId: z.string().nullable(),
       postId: z.string(),
-      isAnonymPost: z.boolean()
+      isAnonymPost: z.boolean(),
+      categoryId: z.enum(['1', '2']).default('1')
     }))
     .mutation(async ({ ctx, input }) => {
-      const { content, userId, postId, isAnonymPost } = input
+      const { content, userId, postId, isAnonymPost, categoryId } = input
 
       // Jika pengen switch ke mode anonym
       if (isAnonymPost) {
@@ -277,6 +319,7 @@ export const postRouter = router({
               userId: null,
               anonymousId: existingAnonymousUser?.id,
               content,
+              categoryId: +categoryId
             }
           })
 
@@ -298,6 +341,7 @@ export const postRouter = router({
             userId: null,
             anonymousId: anonymousPost?.anonymousId,
             content,
+            categoryId: +categoryId
           }
         })
 
@@ -322,7 +366,8 @@ export const postRouter = router({
           data: {
             userId: userId,
             anonymousId: null, // Buat pastiin bakal jadi post public
-            content
+            content,
+            categoryId: +categoryId
           }
         })
       }
@@ -348,7 +393,8 @@ export const postRouter = router({
           data: {
             userId: existingAnonymousPost.Anonymous?.userId,
             anonymousId: null, // Buat pastiin bakal jadi post public
-            content
+            content,
+            categoryId: +categoryId
           }
         })
       }
@@ -374,7 +420,7 @@ export const postRouter = router({
         }
       })
 
-      if(!deletedPost) return apiResponse({
+      if (!deletedPost) return apiResponse({
         status: 400,
         message: 'Post nya gk bisa di delete :('
       })

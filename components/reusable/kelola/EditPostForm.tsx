@@ -9,9 +9,11 @@ import { trpc } from '@/utils/trpc'
 import { Textarea } from '@/components/ui/textarea'
 import { TResponseData, trimErrMessage } from '@/lib/utils'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { usePostCategory } from '@/lib/store'
 
 const formSchema = z.object({
   content: z.string().min(3).max(255),
+  categoryId: z.enum(["1", "2"])
 })
 
 type TProps = {
@@ -30,6 +32,7 @@ type TProps = {
 const EditPostForm: React.FC<TProps> = ({ userId, postId, content, isAnonymous, openEditMenu, responseData, setResponseData, setOpenEditMenu, setPostHasBeenEdited }) => {
 
   const [anonymousMode, setAnonymousMode] = useState(isAnonymous)
+  const { categoryId, setCategoryId } = usePostCategory(state => state)
 
   const [currentUserId, setCurrentUserId] = useState(userId)
   const [currentPostId, setCurrentPostId] = useState(postId)
@@ -38,6 +41,7 @@ const EditPostForm: React.FC<TProps> = ({ userId, postId, content, isAnonymous, 
     resolver: zodResolver(formSchema),
     defaultValues: {
       content: '',
+      categoryId
     },
   })
 
@@ -46,30 +50,25 @@ const EditPostForm: React.FC<TProps> = ({ userId, postId, content, isAnonymous, 
 
     if (postId) {
       form.setValue('content', content)
+      form.setValue('categoryId', categoryId)
 
       setCurrentUserId(userId)
       setCurrentPostId(postId)
     }
 
-  }, [postId])
+  }, [postId, categoryId])
 
   const { isLoading, error, mutate: editPost } = trpc.post.edit.useMutation()
 
   const activeAlert = error || responseData
 
   const submitHandler = (values: z.infer<typeof formSchema>) => {
-    // console.log({
-    //   ...values,
-    //   userId: currentUserId,
-    //   postId: currentPostId,
-    //   isAnonymPost: anonymousMode
-    // })
 
     editPost({
       ...values,
       userId: currentUserId,
       postId: currentPostId,
-      isAnonymPost: anonymousMode
+      isAnonymPost: anonymousMode,
     }, {
       onSuccess: (data) => {
         setPostHasBeenEdited(true)
@@ -94,6 +93,12 @@ const EditPostForm: React.FC<TProps> = ({ userId, postId, content, isAnonymous, 
           <ArrowLeftRight className='w-4 aspect-square' />
           <span className={`ml-1 font-bold ${anonymousMode ? 'text-red-600' : 'text-black'}`}>{anonymousMode ? 'Anonymous' : 'Public'} Post</span>
         </Button>
+
+        <Button onClick={() => setCategoryId(categoryId === "1" ? "2" : "1")} className='w-full lg:w-max space-x-2 mt-2 ml-2' variant='outline'>
+          <ArrowLeftRight className='w-4 aspect-square' />
+          <span className={`ml-1 font-bold`}>{categoryId === "1" ? 'FYP' : 'Dev'} Post</span>
+        </Button>
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(submitHandler)} className="space-y-4 mt-4">
             <FormField

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import CreatePostSection from '@/components/section/CreatePostSection'
 import { trpc } from '@/utils/trpc'
 import Layout from '@/components/section/Layout'
-import { useAnonymousStore } from '@/lib/store'
+import { useAnonymousStore, usePostCategory } from '@/lib/store'
 import { Skeleton } from '@/components/ui/skeleton'
 import CardForum from '@/components/reusable/forum/CardForum'
 import Loading from '@/components/reusable/skeleton/Loading'
@@ -43,19 +43,23 @@ type TProps = {
     id: string,
     username: string,
     name: string,
-    image: string
+    image: string,
+    bio: string
   }
 }
 
 const Forum: NextPage<TProps> = ({ user }) => {
   const [openCreatePostInput, setOpenCreatePostInput] = useState(false)
   const isAnonymPost = useAnonymousStore((state) => state.isAnonymPost)
+  
+  const { categoryId } = usePostCategory(state => state)
 
-  const posts = trpc.post.all.useQuery()
+  const posts = trpc.post.byCategory.useQuery(categoryId)
 
   useEffect(() => {
+    posts.refetch()
     if (!openCreatePostInput) posts.refetch()
-  }, [openCreatePostInput, posts])
+  }, [openCreatePostInput, posts, categoryId])
 
   return (
     <>
@@ -63,7 +67,7 @@ const Forum: NextPage<TProps> = ({ user }) => {
         <title>Forum</title>
       </Head>
       <Layout user={user}>
-        <CreatePostSection userId={user.id} {...{ isAnonymPost, openCreatePostInput, setOpenCreatePostInput }} />
+        <CreatePostSection userId={user.id} username={user.username} {...{ isAnonymPost, openCreatePostInput, setOpenCreatePostInput }} />
 
         <div className='sticky z-10 top-0 py-4 container bg-white/50 backdrop-blur-md border-b'>
           <div className='flex items-start justify-between gap-4'>
