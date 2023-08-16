@@ -104,6 +104,9 @@ export const postRouter = router({
               username: true
             }
           }
+        },
+        orderBy: {
+          createdAt: 'desc'
         }
       })
 
