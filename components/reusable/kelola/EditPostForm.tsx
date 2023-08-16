@@ -96,7 +96,7 @@ const EditPostForm: React.FC<TProps> = ({ userId, postId, username, content, isA
         </Button>
 
         {username === 'adicss' && (
-          <Button onClick={() => setCategoryId(categoryId === "1" ? "2" : "1")} className='w-full lg:w-max space-x-2 mt-2 ml-2' variant='outline'>
+          <Button onClick={() => setCategoryId(categoryId === "1" ? "2" : "1")} className='w-full lg:w-max space-x-2 mt-2 lg:mt-0 lg:ml-2' variant='outline'>
             <ArrowLeftRight className='w-4 aspect-square' />
             <span className={`ml-1 font-bold`}>{categoryId === "1" ? 'FYP' : 'Dev'} Post</span>
           </Button>
