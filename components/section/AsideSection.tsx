@@ -22,7 +22,7 @@ const AsideSection: React.FC<TProps> = ({ setOpenMenu, openMenu, user }) => {
 
   const [menu, setMenu] = useState('fyp')
   const { isAnonymPost, setIsAnonymPost } = useAnonymousStore(state => state)
-  const { categoryId, setCategoryId } = usePostCategory(state => state)
+  const { setCategoryId } = usePostCategory(state => state)
 
   const router = useRouter()
 
@@ -77,6 +77,7 @@ const AsideSection: React.FC<TProps> = ({ setOpenMenu, openMenu, user }) => {
         <h2 className='mt-8 text-lg font-bold'>Kategori Diskusi</h2>
         <ul className='mt-2 space-y-2'>
           <li onClick={() => {
+            if(router.asPath !== '/forum') router.push('/forum')
             setMenu('fyp')
             setOpenMenu(false)
           }} className={`cursor-pointer flex items-center space-x-2 p-2 rounded-md border ${menu === 'fyp' ? 'bg-primary text-secondary' : 'bg-white hover:bg-secondary'}`}>
@@ -84,6 +85,7 @@ const AsideSection: React.FC<TProps> = ({ setOpenMenu, openMenu, user }) => {
             <span className='text-md'>FYP</span>
           </li>
           <li onClick={() => {
+            if(router.asPath !== '/forum') router.push('/forum')
             setMenu('dev')
             setOpenMenu(false)
           }} className={`cursor-pointer flex items-center space-x-2 p-2 rounded-md border ${menu === 'dev' ? 'bg-primary text-secondary' : 'bg-white hover:bg-secondary'}`}>

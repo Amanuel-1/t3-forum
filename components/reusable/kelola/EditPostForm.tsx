@@ -19,6 +19,7 @@ const formSchema = z.object({
 type TProps = {
   userId: string | null,
   postId: string,
+  username: string,
   content: string,
   isAnonymous: boolean,
   openEditMenu: boolean,
@@ -29,7 +30,7 @@ type TProps = {
 }
 
 
-const EditPostForm: React.FC<TProps> = ({ userId, postId, content, isAnonymous, openEditMenu, responseData, setResponseData, setOpenEditMenu, setPostHasBeenEdited }) => {
+const EditPostForm: React.FC<TProps> = ({ userId, postId, username, content, isAnonymous, openEditMenu, responseData, setResponseData, setOpenEditMenu, setPostHasBeenEdited }) => {
 
   const [anonymousMode, setAnonymousMode] = useState(isAnonymous)
   const { categoryId, setCategoryId } = usePostCategory(state => state)
@@ -50,7 +51,7 @@ const EditPostForm: React.FC<TProps> = ({ userId, postId, content, isAnonymous, 
 
     if (postId) {
       form.setValue('content', content)
-      form.setValue('categoryId', categoryId)
+      form.setValue('categoryId', username === 'adicss' ? categoryId : '1')
 
       setCurrentUserId(userId)
       setCurrentPostId(postId)
@@ -94,10 +95,12 @@ const EditPostForm: React.FC<TProps> = ({ userId, postId, content, isAnonymous, 
           <span className={`ml-1 font-bold ${anonymousMode ? 'text-red-600' : 'text-black'}`}>{anonymousMode ? 'Anonymous' : 'Public'} Post</span>
         </Button>
 
-        <Button onClick={() => setCategoryId(categoryId === "1" ? "2" : "1")} className='w-full lg:w-max space-x-2 mt-2 ml-2' variant='outline'>
-          <ArrowLeftRight className='w-4 aspect-square' />
-          <span className={`ml-1 font-bold`}>{categoryId === "1" ? 'FYP' : 'Dev'} Post</span>
-        </Button>
+        {username === 'adicss' && (
+          <Button onClick={() => setCategoryId(categoryId === "1" ? "2" : "1")} className='w-full lg:w-max space-x-2 mt-2 ml-2' variant='outline'>
+            <ArrowLeftRight className='w-4 aspect-square' />
+            <span className={`ml-1 font-bold`}>{categoryId === "1" ? 'FYP' : 'Dev'} Post</span>
+          </Button>
+        )}
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(submitHandler)} className="space-y-4 mt-4">

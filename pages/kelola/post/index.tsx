@@ -106,6 +106,7 @@ const DashboardPost: NextPage<TProps> = ({ user }) => {
               content={selectedPost?.content!}
               isAnonymous={selectedPost?.userId! === undefined}
               {...{
+                username: user.username,
                 openEditMenu,
                 setOpenEditMenu,
                 setPostHasBeenEdited,
