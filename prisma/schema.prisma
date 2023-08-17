@@ -17,6 +17,7 @@ model User {
 
   Post      Post[]
   Anonymous Anonymous?
+  Comment   Comment[]
 }
 
 model Anonymous {
@@ -40,8 +41,9 @@ model Post {
   User      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
   Category  Category   @relation(fields: [categoryId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Comment   Comment[]
 }
 
 model Category {
@@ -49,4 +51,18 @@ model Category {
   name String
 
   Post Post[]
+}
+
+model Comment {
+  id   Int    @id @default(autoincrement())
+  text String
+
+  Post   Post   @relation(fields: [postId], references: [id])
+  postId String
+
+  User   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

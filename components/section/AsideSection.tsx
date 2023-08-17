@@ -44,13 +44,14 @@ const AsideSection: React.FC<TProps> = ({ setOpenMenu, openMenu, user }) => {
 
   return (
     <aside className={`
-      lg:w-2/12 flex flex-col justify-between lg:sticky lg:top-0 
-      py-4 lg:pr-2 lg:border-r-2 lg:border-b-2 lg:rounded-b-md 
-      lg:border-secondary lg:px-0 lg:bg-transparent lg:translate-y-0
+      lg:w-1/5 flex flex-col justify-between lg:sticky lg:top-0 
+      py-4 lg:pr-4 lg:border-r lg:rounded-b-md 
+      lg:px-0 lg:bg-transparent lg:translate-y-0
       h-screen
 
-      fixed inset-0 z-20 px-4 bg-secondary ${openMenu ? 'translate-y-0' : 'translate-y-[200%]'}
+      fixed inset-0 z-20 px-4 bg-white ${openMenu ? 'translate-y-0' : 'translate-y-[200%]'}
       transition-all
+      lg:pl-[2rem]
     `}>
       <div>
 
@@ -131,7 +132,7 @@ const AsideSection: React.FC<TProps> = ({ setOpenMenu, openMenu, user }) => {
             </Avatar>
             <div>
               <p className='font-bold'>{user?.username}</p>
-              <Link href={`/profil/${user?.username}`} className='text-sm text-foreground/60 mt-0 hover:underline'>Lihat Profil</Link>
+              <Link href={`/profil/${user?.username}`} className='text-xs text-foreground/60 mt-0 hover:underline'>Lihat Profil</Link>
             </div>
           </div>
 

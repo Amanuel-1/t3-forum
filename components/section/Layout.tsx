@@ -24,11 +24,11 @@ const Layout: React.FC<TProps> = ({ user, children }) => {
 
       <Navbar username={currentUser.username} image={currentUser.image} />
 
-      <div className='flex relative items-start lg:container'>
+      <div className='flex relative items-start'>
 
         <AsideSection openMenu={openMenu} setOpenMenu={setOpenMenu} user={currentUser} />
 
-        <main className='relative lg:w-10/12 w-full pb-10'>
+        <main className='relative grow pb-10'>
           <AsideToggle setOpenMenu={setOpenMenu} />
 
           {children}

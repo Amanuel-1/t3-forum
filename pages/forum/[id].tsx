@@ -1,4 +1,5 @@
 import CardForumDetail from '@/components/reusable/forum/CardForumDetail'
+import CommentCard from '@/components/reusable/forum/CommentCard'
 import SubMenuHeader from '@/components/reusable/menu/SubMenuHeader'
 import Loading from '@/components/reusable/skeleton/Loading'
 import Layout from '@/components/section/Layout'
@@ -51,12 +52,12 @@ const PostDetail: NextPage<TProps> = ({ user }) => {
         <title>Post Detail</title>
       </Head>
       <Layout user={user}>
-        <main className='bg-background text-foreground selection:bg-foreground selection:text-background pb-10'>
+        <main className='bg-background text-foreground selection:bg-foreground selection:text-background pb-10 h-[2000px]'>
 
           <SubMenuHeader
             backUrl='/forum'
             title='Postingan'
-            data={null}
+            data={user.username}
           />
 
           <div className='container py-4'>
@@ -65,6 +66,10 @@ const PostDetail: NextPage<TProps> = ({ user }) => {
                 <CardForumDetail {...postResponse.data} />
               )}
             </Loading>
+
+            <div className='mt-4'>
+              <CommentCard/>
+            </div>
           </div>
 
         </main>
