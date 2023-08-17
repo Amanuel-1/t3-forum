@@ -1,10 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { AlertOctagon, Forward, MessagesSquare } from 'lucide-react'
-import { useRouter } from 'next/router'
+import { AlertOctagon, Forward, Send } from 'lucide-react'
 import React from 'react'
 
 type TProps = {
@@ -23,9 +23,7 @@ type TProps = {
   } | null
 }
 
-const CardForum: React.FC<TProps> = ({ id, content, User, createdAt, Anonymous }) => {
-  const router = useRouter()
-
+const CardForumDetail: React.FC<TProps> = ({ id, content, createdAt, User, Anonymous }) => {
   const getMeta = (createdAt: string) => {
     const formattedDate = new Date(createdAt)
       .toLocaleString('id')
@@ -42,9 +40,7 @@ const CardForum: React.FC<TProps> = ({ id, content, User, createdAt, Anonymous }
     <Card>
       <CardHeader className='px-4 py-2'>
 
-        <CardTitle onClick={() => {
-          if (!Anonymous) router.push('/profil/' + User?.username)
-        }} className={`${Anonymous ? 'cursor-default' : 'cursor-pointer'} flex items-center gap-4`}>
+        <CardTitle className={`${Anonymous ? 'cursor-default' : 'cursor-pointer'} flex items-center gap-4`}>
 
           <Avatar>
             <AvatarImage src={User?.image ?? ''} alt="@shadcn" />
@@ -66,50 +62,46 @@ const CardForum: React.FC<TProps> = ({ id, content, User, createdAt, Anonymous }
         <p>{content}</p>
       </CardContent>
       <Separator />
-      <CardFooter className='p-2 space-x-2'>
+      <CardFooter className='p-2 space-x-2 flex w-full'>
 
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant='outline' onClick={() => router.push('/forum/' + id)}>
-                <MessagesSquare className='w-5 aspect-square' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Komentar</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <form className='grow flex gap-2'>
+          <Input type='text' placeholder='Komentar..' />
+          <Button className='w-max'>
+            <Send className='w-5 aspect-square'/>
+          </Button>
+        </form>
 
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant='outline'>
-                <Forward className='w-5 aspect-square' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Bagikan</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <div className='w-max space-x-2'>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant='outline'>
+                  <Forward className='w-5 aspect-square' />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Bagikan</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant='destructive'>
-                <AlertOctagon className='w-5 aspect-square' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Lapor Pedo</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant='destructive'>
+                  <AlertOctagon className='w-5 aspect-square' />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Lapor Pedo</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
 
       </CardFooter>
     </Card>
   )
 }
 
-export default CardForum
+export default CardForumDetail
