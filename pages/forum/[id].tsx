@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { getAuthUser } from '@/lib/utils'
 import { trpc } from '@/utils/trpc'
 import { GetServerSideProps, NextPage } from 'next'
+import Head from 'next/head'
 import { useRouter } from 'next/router'
 import React from 'react'
 
@@ -45,25 +46,30 @@ const PostDetail: NextPage<TProps> = ({ user }) => {
   const { data: postResponse } = trpc.post.byId.useQuery(id as string)
 
   return (
-    <Layout user={user}>
-      <main className='bg-background text-foreground selection:bg-foreground selection:text-background pb-10'>
+    <>
+      <Head>
+        <title>Post Detail</title>
+      </Head>
+      <Layout user={user}>
+        <main className='bg-background text-foreground selection:bg-foreground selection:text-background pb-10'>
 
-        <SubMenuHeader
-          backUrl='/forum'
-          title='Postingan'
-          data={null}
-        />
+          <SubMenuHeader
+            backUrl='/forum'
+            title='Postingan'
+            data={null}
+          />
 
-        <div className='container py-4'>
-          <Loading data={postResponse?.data} skeletonFallback={<Skeleton className='w-full h-34 rounded-md' />}>
-            {postResponse?.data && (
-              <CardForumDetail {...postResponse.data} />
-            )}
-          </Loading>
-        </div>
+          <div className='container py-4'>
+            <Loading data={postResponse?.data} skeletonFallback={<Skeleton className='w-full h-34 rounded-md' />}>
+              {postResponse?.data && (
+                <CardForumDetail {...postResponse.data} />
+              )}
+            </Loading>
+          </div>
 
-      </main>
-    </Layout>
+        </main>
+      </Layout>
+    </>
   )
 }
 
