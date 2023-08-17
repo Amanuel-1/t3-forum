@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { AlertOctagon, Forward, Send } from 'lucide-react'
+import { useRouter } from 'next/router'
 import React from 'react'
 
 type TProps = {
@@ -24,6 +25,8 @@ type TProps = {
 }
 
 const CardForumDetail: React.FC<TProps> = ({ id, content, createdAt, User, Anonymous }) => {
+  const router = useRouter()
+
   const getMeta = (createdAt: string) => {
     const formattedDate = new Date(createdAt)
       .toLocaleString('id')
@@ -38,7 +41,7 @@ const CardForumDetail: React.FC<TProps> = ({ id, content, createdAt, User, Anony
 
   return (
     <Card>
-      <CardHeader className='px-4 py-2'>
+      <CardHeader className='px-4 py-2' onClick={() => router.push('/profil/' + User?.username)}>
 
         <CardTitle className={`${Anonymous ? 'cursor-default' : 'cursor-pointer'} flex items-center gap-4`}>
 
@@ -62,42 +65,48 @@ const CardForumDetail: React.FC<TProps> = ({ id, content, createdAt, User, Anony
         <p>{content}</p>
       </CardContent>
       <Separator />
-      <CardFooter className='p-2 space-x-2 flex w-full'>
+      <CardFooter className='p-2 gap-2 flex flex-col lg:flex-row items-start w-full'>
 
-        <form className='grow flex gap-2'>
+        <div className='w-full flex lg:w-max space-x-2 lg:order-2'>
+          <div className='w-1/2'>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant='outline' className='w-full space-x-2 lg:space-x-0'>
+                    <Forward className='w-5 aspect-square' />
+                    <p className='lg:hidden'>Bagikan</p>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Bagikan</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+
+          <div className='w-1/2'>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant='destructive' className='w-full space-x-2 lg:space-x-0'>
+                    <AlertOctagon className='w-5 aspect-square' />
+                    <p className='lg:hidden'>Lapor Pedo</p>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Lapor Pedo</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        </div>
+
+        <form className='flex gap-2 w-full lg:w-max lg:grow lg:order-1'>
           <Input type='text' placeholder='Komentar..' />
           <Button className='w-max'>
-            <Send className='w-5 aspect-square'/>
+            <Send className='w-5 aspect-square' />
           </Button>
         </form>
-
-        <div className='w-max space-x-2'>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant='outline'>
-                  <Forward className='w-5 aspect-square' />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Bagikan</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant='destructive'>
-                  <AlertOctagon className='w-5 aspect-square' />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Lapor Pedo</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
 
       </CardFooter>
     </Card>

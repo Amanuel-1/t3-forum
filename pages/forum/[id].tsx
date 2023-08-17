@@ -54,7 +54,7 @@ const PostDetail: NextPage<TProps> = ({ user }) => {
           data={null}
         />
 
-        <div className='p-2'>
+        <div className='container py-4'>
           <Loading data={postResponse?.data} skeletonFallback={<Skeleton className='w-full h-34 rounded-md' />}>
             {postResponse?.data && (
               <CardForumDetail {...postResponse.data} />
