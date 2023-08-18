@@ -88,3 +88,11 @@ export type TSelectedPost = {
 }
 
 export const { useUploadThing, uploadFiles } = generateReactHelpers<uploadFileRouter>()
+
+export type TUser = {
+  id: string,
+  username: string,
+  name: string,
+  bio: string | null,
+  image: string | null
+}

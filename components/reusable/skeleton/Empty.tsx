@@ -9,7 +9,7 @@ type TProps = {
 const Empty: React.FC<TProps> = ({ data, children, emptyFallback }) => {
   return (
     <>
-      {data?.length ? children : emptyFallback}
+      {data?.length || 0 ? children : emptyFallback}
     </>
   )
 }

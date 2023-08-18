@@ -1,6 +1,6 @@
 import SubMenuHeader from '@/components/reusable/menu/SubMenuHeader'
 import Layout from '@/components/section/Layout'
-import { TResponseData, TSelectedPost, getAuthUser } from '@/lib/utils'
+import { TResponseData, TSelectedPost, TUser, getAuthUser } from '@/lib/utils'
 import { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import React, { useEffect, useState } from 'react'
@@ -48,18 +48,12 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 }
 
 type TProps = {
-  user: {
-    id: string,
-    username: string,
-    name: string,
-    bio: string | null,
-    image: string | null
-  }
+  user: TUser
 }
 
 const DashboardPost: NextPage<TProps> = ({ user }) => {
 
-  const { error: postError, isRefetching, data: postResponse, refetch: postRefetch } = trpc.post.user.useQuery({
+  const { isRefetching, data: postResponse, refetch: postRefetch } = trpc.post.user.useQuery({
     username: user.username,
     includeAnonymous: true
   })
@@ -76,17 +70,18 @@ const DashboardPost: NextPage<TProps> = ({ user }) => {
     if (postHasBeenEdited) {
       postRefetch()
 
-      if (!openEditMenu) setResponseData(null)
+      if (!openEditMenu) {
+        setResponseData(null)
+        setPostHasBeenEdited(false)
+      }
     }
-  }, [postHasBeenEdited, openEditMenu])
 
-  useEffect(() => {
     if (postHasBeenDeleted) {
       postRefetch()
 
       setPostHasBeenDeleted(false)
     }
-  }, [postHasBeenDeleted])
+  }, [postHasBeenEdited, postHasBeenDeleted, openEditMenu])
 
   return (
     <>
@@ -101,12 +96,12 @@ const DashboardPost: NextPage<TProps> = ({ user }) => {
 
           <div>
             <EditPostForm
-              userId={selectedPost?.userId || null}
-              postId={selectedPost?.id!}
-              content={selectedPost?.content!}
-              isAnonymous={selectedPost?.userId! === undefined}
               {...{
                 username: user.username,
+                postId: selectedPost?.id || '',
+                userId: selectedPost?.userId || '',
+                content: selectedPost?.content || '',
+                isAnonymous: !selectedPost?.userId,
                 openEditMenu,
                 setOpenEditMenu,
                 setPostHasBeenEdited,
@@ -117,14 +112,16 @@ const DashboardPost: NextPage<TProps> = ({ user }) => {
             <div className='container'>
               <ul className='pt-4 pb-20 space-y-4'>
                 <Loading data={postResponse?.data} skeletonFallback={<Skeleton className='w-full h-12 rounded-md' />}>
-                  <Empty data={postResponse?.data} emptyFallback={
-                    <li className='text-foreground/60'>
-                      Kosong
-                    </li>
-                  }>
+                  <Empty data={postResponse?.data} emptyFallback={<li className='text-foreground/60'> Kosong </li>}>
                     {postResponse?.data?.map((post, idx) => (
                       <li key={idx}>
-                        <CardForum {...{ ...post, setOpenEditMenu, setSelectedPost, setPostHasBeenDeleted }} />
+                        <CardForum 
+                          {...{ 
+                            ...post, 
+                            setOpenEditMenu, 
+                            setSelectedPost, 
+                            setPostHasBeenDeleted 
+                          }} />
                       </li>
                     ))}
                   </Empty>

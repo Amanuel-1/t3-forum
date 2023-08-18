@@ -7,13 +7,10 @@ import { Button } from '../ui/button'
 import { useRouter } from 'next/router'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
 import { useAnonymousStore, usePostCategory } from '@/lib/store'
+import { TUser } from '@/lib/utils'
 
 type TProps = {
-  user: {
-    username: string,
-    name: string,
-    image: string | null
-  },
+  user: TUser,
   openMenu: boolean,
   setOpenMenu: (value: React.SetStateAction<boolean>) => void,
 }

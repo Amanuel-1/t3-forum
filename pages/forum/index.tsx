@@ -1,4 +1,4 @@
-import { getAuthUser } from '@/lib/utils'
+import { TUser, getAuthUser } from '@/lib/utils'
 import { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import React, { useEffect, useState } from 'react'
@@ -39,13 +39,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 }
 
 type TProps = {
-  user: {
-    id: string,
-    username: string,
-    name: string,
-    image: string,
-    bio: string
-  }
+  user: TUser
 }
 
 const Forum: NextPage<TProps> = ({ user }) => {
@@ -67,7 +61,14 @@ const Forum: NextPage<TProps> = ({ user }) => {
         <title>Forum</title>
       </Head>
       <Layout user={user}>
-        <CreatePostSection userId={user.id} username={user.username} {...{ isAnonymPost, openCreatePostInput, setOpenCreatePostInput }} />
+        <CreatePostSection 
+          {...{ 
+            userId: user.id,
+            username: user.username,
+            isAnonymPost, 
+            openCreatePostInput, 
+            setOpenCreatePostInput 
+          }} />
 
         <div className='sticky z-10 top-0 py-4 container bg-white/50 backdrop-blur-md'>
           <div className='flex items-start justify-between gap-4'>

@@ -5,7 +5,7 @@ import Head from 'next/head'
 import React, { useState } from 'react'
 import { Separator } from '@/components/ui/separator'
 import CardForum from '@/components/reusable/forum/CardForum'
-import { getAuthUser } from '@/lib/utils'
+import { TUser, getAuthUser } from '@/lib/utils'
 import Layout from '@/components/section/Layout'
 import SubMenuHeader from '@/components/reusable/menu/SubMenuHeader'
 import { createServerSideHelpers } from '@trpc/react-query/server'
@@ -51,13 +51,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
 type TProps = {
   username: string,
-  user: {
-    id: string,
-    username: string,
-    name: string,
-    image: string,
-    bio: string
-  }
+  user: TUser
 }
 
 const UserDataSkeleton: React.FC = () => {
@@ -84,7 +78,14 @@ const ProfileDetail: NextPage<TProps> = ({ username, user }) => {
       <Layout user={user}>
         <main className='bg-background text-foreground selection:bg-foreground selection:text-background pb-10'>
           
-          <SeeProfilePict image={userResponse?.data?.image || ''} {...{ setSeeProfilePict, seeProfilePict }} />
+          <SeeProfilePict  
+            {...{ 
+              setSeeProfilePict, 
+              seeProfilePict,
+              image: userResponse?.data?.image || ''
+            }} 
+          />
+
           <SubMenuHeader backUrl='/forum' title='Profil' data={userResponse?.data?.username || null} />
 
           <div className='container'>

@@ -1,11 +1,12 @@
 import CardForumDetail from '@/components/reusable/forum/CardForumDetail'
 import CommentCard from '@/components/reusable/forum/CommentCard'
+import RefetchData from '@/components/reusable/global/RefetchData'
 import SubMenuHeader from '@/components/reusable/menu/SubMenuHeader'
 import Loading from '@/components/reusable/skeleton/Loading'
 import Layout from '@/components/section/Layout'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useUser } from '@/lib/hooks'
-import { getAuthUser } from '@/lib/utils'
+import { TUser, getAuthUser } from '@/lib/utils'
 import { trpc } from '@/utils/trpc'
 import { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
@@ -32,13 +33,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 }
 
 type TProps = {
-  user: {
-    id: string,
-    username: string,
-    name: string,
-    image: string,
-    bio: string
-  }
+  user: TUser
 }
 
 const PostDetail: NextPage<TProps> = ({ user }) => {
@@ -72,11 +67,16 @@ const PostDetail: NextPage<TProps> = ({ user }) => {
             title='Postingan'
             data={user.username}
           />
+          <RefetchData isRefetching={isRefetching}/>
 
           <div className='container py-4'>
-            <Loading data={postResponse} skeletonFallback={<Skeleton className='w-full h-34 rounded-md' />}>
+            <Loading data={postResponse?.data} skeletonFallback={<Skeleton className='w-full h-34 rounded-md' />}>
               {postResponse?.data && (
-                <CardForumDetail {...postResponse.data} currentUser={currentUser} setNewCommentInserted={setNewCommentInserted} />
+                <CardForumDetail 
+                  {...postResponse.data} 
+                  currentUser={currentUser} 
+                  setNewCommentInserted={setNewCommentInserted} 
+                />
               )}
             </Loading>
 

@@ -1,4 +1,4 @@
-import { TResponseData, getAuthUser } from '@/lib/utils'
+import { TResponseData, TUser, getAuthUser } from '@/lib/utils'
 import { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import React, { useEffect, useState } from 'react'
@@ -50,13 +50,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 }
 
 type TProps = {
-  user: {
-    id: string,
-    username: string,
-    name: string,
-    bio: string | null,
-    image: string | null
-  }
+  user: TUser
 }
 
 const PengaturanAkun: NextPage<TProps> = ({ user }) => {
@@ -97,11 +91,24 @@ const PengaturanAkun: NextPage<TProps> = ({ user }) => {
           <SubMenuHeader backUrl='/forum' title='Pengaturan Akun' data={currentUser.username} />
           <RefetchData isRefetching={isRefetching} />
 
-          <EditProfilePicture {...{ openEditPictMenu, setOpenEditPictMenu, setProfileHasBeenEdited, user: currentUser }} />
+          <EditProfilePicture
+            {...{
+              openEditPictMenu,
+              setOpenEditPictMenu,
+              setProfileHasBeenEdited,
+              user: currentUser
+            }} />
 
           <div className='relative'>
 
-            <EditAccountForm {...{ openEditMenu, setOpenEditMenu, setProfileHasBeenEdited, responseData, setResponseData }} />
+            <EditAccountForm
+              {...{
+                openEditMenu,
+                setOpenEditMenu,
+                setProfileHasBeenEdited,
+                responseData,
+                setResponseData
+              }} />
 
             <div className='container'>
               <div className='flex items-start gap-4 py-4'>

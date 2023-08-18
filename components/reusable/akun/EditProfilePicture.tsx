@@ -1,27 +1,21 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { CardTitle, Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
-import { uploadFiles } from '@/lib/utils'
+import { TUser, uploadFiles } from '@/lib/utils'
 import { trpc } from '@/utils/trpc'
 import { Loader2 } from 'lucide-react'
 import React, { useState } from 'react'
 import { UploadFileResponse } from 'uploadthing/client'
 
 type TProps = {
-  user: {
-    id: string,
-    username: string,
-    name: string,
-    bio: string | null,
-    image: string | null
-  },
+  user: TUser,
   openEditPictMenu: boolean,
   setProfileHasBeenEdited: (value: React.SetStateAction<boolean>) => void,
   setOpenEditPictMenu: (value: React.SetStateAction<boolean>) => void
 }
 
 const EditProfilePicture: React.FC<TProps> = ({ user, openEditPictMenu, setOpenEditPictMenu, setProfileHasBeenEdited }) => {
-  const { isLoading, mutate: editUser, error: userError } = trpc.user.editAccount.useMutation()
+  const { mutate: editUser } = trpc.user.editAccount.useMutation()
 
   const [file, setFile] = useState<File | null>(null)
   const [filePreview, setFilePreview] = useState<string | null>(null)

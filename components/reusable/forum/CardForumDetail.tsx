@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { TResponseData } from '@/lib/utils'
+import { TUser } from '@/lib/utils'
 import { trpc } from '@/utils/trpc'
 import { AlertOctagon, Forward, Loader2, Send } from 'lucide-react'
 import { useRouter } from 'next/router'
@@ -24,13 +24,7 @@ type TProps = {
     username: string
     id: string
   } | null,
-  currentUser: {
-    id: string,
-    username: string,
-    name: string,
-    image: string | null,
-    bio: string | null
-  },
+  currentUser: TUser,
   setNewCommentInserted: (value: React.SetStateAction<boolean>) => void
 }
 
@@ -40,7 +34,7 @@ const CardForumDetail: React.FC<TProps> = ({ id, content, createdAt, User, Anony
   const [comment, setComment] = useState('')
   const [response, setResponse] = useState({})
 
-  const { mutate: insertNewComment, isLoading, error } = trpc.comment.store.useMutation()
+  const { mutate: insertNewComment, isLoading } = trpc.comment.store.useMutation()
 
   const getMeta = (createdAt: string) => {
     const formattedDate = new Date(createdAt)

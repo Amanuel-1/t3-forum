@@ -1,12 +1,5 @@
 import { create } from "zustand"
-
-type TUser = {
-  id: string,
-  name: string,
-  username: string,
-  image: string | null,
-  bio: string | null,
-}
+import { TUser } from "./utils"
 
 type TAnonymousStore = {
   isAnonymPost: boolean,

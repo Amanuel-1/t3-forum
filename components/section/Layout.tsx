@@ -3,15 +3,10 @@ import Navbar from '../reusable/global/Navbar'
 import AsideSection from './AsideSection'
 import AsideToggle from '../reusable/global/AsideToggle'
 import { useUser } from '@/lib/hooks'
+import { TUser } from '@/lib/utils'
 
 type TProps = {
-  user: {
-    id: string,
-    username: string,
-    name: string,
-    image: string | null,
-    bio: string | null
-  },
+  user: TUser,
   children: React.ReactNode,
 }
 
