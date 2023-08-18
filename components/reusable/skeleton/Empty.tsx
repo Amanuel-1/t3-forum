@@ -1,7 +1,7 @@
 import React from 'react'
 
 type TProps = {
-  data: Array<any>,
+  data?: Array<any>,
   children: React.ReactNode,
   emptyFallback: React.ReactElement
 }
@@ -9,7 +9,7 @@ type TProps = {
 const Empty: React.FC<TProps> = ({ data, children, emptyFallback }) => {
   return (
     <>
-      {data.length ? children : emptyFallback}
+      {data?.length ? children : emptyFallback}
     </>
   )
 }
