@@ -1,15 +1,24 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
 import React from 'react'
 
-type Props = {}
+type TProps = {
+  id: number,
+  text: string,
+  createdAt: string,
+  User: {
+    username: string,
+    image: string | null
+  }
+}
 
-const CommentCard: React.FC = (props: Props) => {
+const CommentCard: React.FC<TProps> = ({ id, text, createdAt, User }) => {
   const getMeta = (createdAt: string) => {
-    const formattedDate = createdAt
+    const formattedDate = new Date(createdAt)
+      .toLocaleString('id')
       .replaceAll('/', '-')
       .replaceAll('.', ':')
       .split('')
@@ -20,10 +29,10 @@ const CommentCard: React.FC = (props: Props) => {
   }
 
   return (
-    <div className='flex gap-2'>
+    <li className='flex gap-2'>
       <Avatar className='rounded-md'>
-        <AvatarImage />
-        <AvatarFallback className='rounded-md'>A</AvatarFallback>
+        <AvatarImage src={User.image ?? ''} />
+        <AvatarFallback className='rounded-md'>PP</AvatarFallback>
       </Avatar>
 
       <Card className='grow'>
@@ -32,8 +41,8 @@ const CommentCard: React.FC = (props: Props) => {
             <div className='flex justify-between'>
 
               <div>
-                <p className='text-sm font-bold'>Adicss</p>
-                <p className='text-xs text-foreground/60'>Dibuat {getMeta(new Date(2023, 2, 12).toLocaleString('id'))}</p>
+                <p className='text-sm font-bold'>{User.username}</p>
+                <p className='text-xs text-foreground/60'>Dibuat {getMeta(createdAt)}</p>
               </div>
 
               <div>
@@ -45,11 +54,11 @@ const CommentCard: React.FC = (props: Props) => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className='w-56' side='left' sideOffset={4}>
                     <DropdownMenuItem className='space-x-3 cursor-pointer'>
-                      <Pencil className='w-4 aspect-square'/>
+                      <Pencil className='w-4 aspect-square' />
                       <p>Edit Komentar</p>
                     </DropdownMenuItem>
                     <DropdownMenuItem className='space-x-3 focus:bg-destructive focus:text-white cursor-pointer'>
-                      <Trash2 className='w-4 aspect-square'/>
+                      <Trash2 className='w-4 aspect-square' />
                       <p>Hapus Komentar</p>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -59,12 +68,12 @@ const CommentCard: React.FC = (props: Props) => {
             </div>
 
             <p className='mt-2'>
-              Komentar Orang
+              {text}
             </p>
           </div>
         </CardContent>
       </Card>
-    </div>
+    </li>
   )
 }
 
