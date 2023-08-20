@@ -20,13 +20,16 @@ export const commentRouter = router({
             }
           },
           createdAt: true
+        },
+        orderBy: {
+          createdAt: 'desc'
         }
       })
 
-      if(!existingComments.length) return apiResponse({
+      if (!existingComments.length) return apiResponse({
         status: 404,
         message: 'Belom ada komentar'
-      })
+      }, [])
 
       return apiResponse({
         status: 200,
@@ -46,7 +49,7 @@ export const commentRouter = router({
         }
       })
 
-      if(!insertedComment) return apiResponse({
+      if (!insertedComment) return apiResponse({
         status: 400,
         message: 'Gagal komentarin postingan ini'
       })
@@ -55,5 +58,50 @@ export const commentRouter = router({
         status: 200,
         message: 'Berhasil berkomentar'
       }, insertedComment)
+    }),
+  edit: procedure
+    .input(z.object({
+      commentId: z.number(),
+      commentText: z.string()
+    }))
+    .mutation(async ({ ctx, input: { commentId, commentText } }) => {
+      const editedComment = await ctx.prisma.comment.update({
+        where: {
+          id: commentId
+        },
+        data: {
+          text: commentText
+        }
+      })
+
+      if(!editedComment) return apiResponse({
+        status: 400,
+        message: 'Gagal mengedit comment'
+      })
+
+      return apiResponse({
+        status: 200,
+        message: 'Berhasil mengedit comment'
+      })
+    }),
+  delete: procedure
+    .input(z.number())
+    .mutation(async ({ ctx, input: commentId }) => {
+      const deletedComment = await ctx.prisma.comment.delete({
+        where: {
+          id: commentId
+        }
+      })
+
+      if (!deletedComment) return apiResponse({
+        status: 400,
+        message: 'Gagal menghapus comment'
+      })
+
+      return apiResponse({
+        status: 200,
+        message: 'Berhasil menghapus comment lu'
+      })
     })
+
 })

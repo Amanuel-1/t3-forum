@@ -2,8 +2,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
-import React from 'react'
+import { trpc } from '@/utils/trpc'
+import { Loader2, MoreHorizontal, Pencil, Send, Trash2, X } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import React, { useState } from 'react'
 
 type TProps = {
   id: number,
@@ -12,10 +14,58 @@ type TProps = {
   User: {
     username: string,
     image: string | null
-  }
+  },
+  setCommentHasBeenEdited: (value: React.SetStateAction<boolean>) => void,
+  setCommentHasBeenDeleted: (value: React.SetStateAction<boolean>) => void
 }
 
-const CommentCard: React.FC<TProps> = ({ id, text, createdAt, User }) => {
+type TPropsEditForm = {
+  commentId: number,
+  commentText: string,
+  setEditMode: (value: React.SetStateAction<boolean>) => void,
+  setCommentHasBeenEdited: (value: React.SetStateAction<boolean>) => void,
+}
+
+const EditForm: React.FC<TPropsEditForm> = ({ commentId, commentText, setEditMode, setCommentHasBeenEdited }) => {
+  const { mutate: editComment, isLoading } = trpc.comment.edit.useMutation()
+  const [comment, setComment] = useState(commentText)
+
+  const submitHandler: React.FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault()
+    editComment({
+      commentId,
+      commentText: comment
+    }, {
+      onSuccess: () => {
+        setCommentHasBeenEdited(true)
+        setEditMode(false)
+      }
+    })
+  }
+
+  return (
+    <form onSubmit={submitHandler} className='flex w-full items-center gap-2 mt-2'>
+      <Input type='text' placeholder='Komentar' className='py-1 px-2 h-8' value={comment} onChange={(e) => setComment(e.target.value)} />
+      <div className='flex gap-1'>
+        <Button type='submit' className='w-max h-8' disabled={isLoading}>
+          {isLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Send className='w-4 aspect-square' />
+          )}
+        </Button>
+        <Button type='button' variant='destructive' className='w-max h-8' onClick={() => setEditMode(false)}>
+          <X className='w-4 aspect-square' />
+        </Button>
+      </div>
+    </form>
+  )
+}
+
+const CommentCard: React.FC<TProps> = ({ id, text, createdAt, User, setCommentHasBeenEdited, setCommentHasBeenDeleted }) => {
+  const [editMode, setEditMode] = useState(false)
+  const { mutate: deleteComment } = trpc.comment.delete.useMutation()
+
   const getMeta = (createdAt: string) => {
     const formattedDate = new Date(createdAt)
       .toLocaleString('id')
@@ -26,6 +76,14 @@ const CommentCard: React.FC<TProps> = ({ id, text, createdAt, User }) => {
     formattedDate.splice(-3, 3)
 
     return formattedDate.join('')
+  }
+
+  const deleteHandler = () => {
+    deleteComment(id, {
+      onSuccess: () => {
+        setCommentHasBeenDeleted(true)
+      }
+    })
   }
 
   return (
@@ -53,11 +111,11 @@ const CommentCard: React.FC<TProps> = ({ id, text, createdAt, User }) => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className='w-56' side='left' sideOffset={4}>
-                    <DropdownMenuItem className='space-x-3 cursor-pointer'>
+                    <DropdownMenuItem onClick={() => setEditMode(true)} className='space-x-3 cursor-pointer'>
                       <Pencil className='w-4 aspect-square' />
                       <p>Edit Komentar</p>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className='space-x-3 focus:bg-destructive focus:text-white cursor-pointer'>
+                    <DropdownMenuItem onClick={deleteHandler} className='space-x-3 focus:bg-destructive focus:text-white cursor-pointer'>
                       <Trash2 className='w-4 aspect-square' />
                       <p>Hapus Komentar</p>
                     </DropdownMenuItem>
@@ -67,9 +125,11 @@ const CommentCard: React.FC<TProps> = ({ id, text, createdAt, User }) => {
 
             </div>
 
-            <p className='mt-2'>
-              {text}
-            </p>
+            {
+              editMode
+                ? (<EditForm commentText={text} commentId={id} setEditMode={setEditMode} setCommentHasBeenEdited={setCommentHasBeenEdited} />)
+                : (<p className='mt-2 grow'> {text} </p>)
+            }
           </div>
         </CardContent>
       </Card>

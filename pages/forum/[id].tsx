@@ -45,6 +45,8 @@ const PostDetail: NextPage<TProps> = ({ user }) => {
   const { data: postResponse } = trpc.post.byId.useQuery(id as string)
   const { data: commentsResponse, refetch: commentRefetch, isRefetching } = trpc.comment.byPostId.useQuery(id as string)
 
+  const [commentHasBeenEdited, setCommentHasBeenEdited] = useState(false)
+  const [commentHasBeenDeleted, setCommentHasBeenDeleted] = useState(false)
   const [newCommentInserted, setNewCommentInserted] = useState(false)
 
   useEffect(() => {
@@ -52,7 +54,17 @@ const PostDetail: NextPage<TProps> = ({ user }) => {
       commentRefetch()
       setNewCommentInserted(false)
     }
-  }, [newCommentInserted])
+
+    if(commentHasBeenEdited) {
+      commentRefetch()
+      setCommentHasBeenEdited(false)
+    }
+
+    if(commentHasBeenDeleted) {
+      commentRefetch()
+      setCommentHasBeenDeleted(false)
+    }
+  }, [newCommentInserted, commentHasBeenEdited, commentHasBeenDeleted])
 
   return (
     <>
@@ -60,7 +72,7 @@ const PostDetail: NextPage<TProps> = ({ user }) => {
         <title>Post Detail</title>
       </Head>
       <Layout user={user}>
-        <main className='bg-background text-foreground selection:bg-foreground selection:text-background pb-10 h-[2000px]'>
+        <main className='bg-background text-foreground selection:bg-foreground selection:text-background pb-10'>
 
           <SubMenuHeader
             backUrl='/forum'
@@ -84,7 +96,7 @@ const PostDetail: NextPage<TProps> = ({ user }) => {
               <ul className='space-y-2'>
                 <Loading data={commentsResponse} skeletonFallback={<Skeleton className='w-full h-34 rounded-md' />}>
                   {commentsResponse?.data?.map(comment => (
-                    <CommentCard key={comment.id} {...comment} />
+                    <CommentCard key={comment.id} {...comment} setCommentHasBeenEdited={setCommentHasBeenEdited} setCommentHasBeenDeleted={setCommentHasBeenDeleted} />
                   ))}
                 </Loading>
               </ul>
