@@ -7,14 +7,19 @@ import Layout from '@/components/section/Layout'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useUser } from '@/lib/hooks'
 import { TUser, getAuthUser } from '@/lib/utils'
+import { appRouter } from '@/server/routers/_app'
+import { createContext } from '@/server/trpc'
 import { trpc } from '@/utils/trpc'
+import { createServerSideHelpers } from '@trpc/react-query/server'
 import { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
+import superjson from 'superjson'
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const user = await getAuthUser(ctx.req.cookies?.token!)
+  const { id } = ctx.query
 
   if (!user) {
     return {
@@ -25,9 +30,20 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     }
   }
 
+  // Prefetch the data
+  const helpers = createServerSideHelpers({
+    router: appRouter,
+    ctx: await createContext(),
+    transformer: superjson
+  })
+
+  await helpers.post.byId.prefetch(id as string)
+  await helpers.comment.byPostId.prefetch(id as string)
+
   return {
     props: {
-      user
+      user,
+      trpcState: helpers.dehydrate()
     }
   }
 }
@@ -55,15 +71,16 @@ const PostDetail: NextPage<TProps> = ({ user }) => {
       setNewCommentInserted(false)
     }
 
-    if(commentHasBeenEdited) {
+    if (commentHasBeenEdited) {
       commentRefetch()
       setCommentHasBeenEdited(false)
     }
 
-    if(commentHasBeenDeleted) {
+    if (commentHasBeenDeleted) {
       commentRefetch()
       setCommentHasBeenDeleted(false)
     }
+
   }, [newCommentInserted, commentHasBeenEdited, commentHasBeenDeleted])
 
   return (
@@ -79,22 +96,22 @@ const PostDetail: NextPage<TProps> = ({ user }) => {
             title='Postingan'
             data={user.username}
           />
-          <RefetchData isRefetching={isRefetching}/>
+          <RefetchData isRefetching={isRefetching} />
 
           <div className='container py-4'>
-            <Loading data={postResponse?.data} skeletonFallback={<Skeleton className='w-full h-34 rounded-md' />}>
+            <Loading data={postResponse?.data} skeletonFallback={<Skeleton className='w-full h-24' />}>
               {postResponse?.data && (
-                <CardForumDetail 
-                  {...postResponse.data} 
-                  currentUser={currentUser} 
-                  setNewCommentInserted={setNewCommentInserted} 
+                <CardForumDetail
+                  {...postResponse.data}
+                  currentUser={currentUser}
+                  setNewCommentInserted={setNewCommentInserted}
                 />
               )}
             </Loading>
 
             <div className='mt-4'>
               <ul className='space-y-2'>
-                <Loading data={commentsResponse} skeletonFallback={<Skeleton className='w-full h-34 rounded-md' />}>
+                <Loading data={commentsResponse?.data} skeletonFallback={<Skeleton className='w-full h-14 rounded-md' />}>
                   {commentsResponse?.data?.map(comment => (
                     <CommentCard key={comment.id} {...comment} setCommentHasBeenEdited={setCommentHasBeenEdited} setCommentHasBeenDeleted={setCommentHasBeenDeleted} />
                   ))}

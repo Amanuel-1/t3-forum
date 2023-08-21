@@ -118,11 +118,11 @@ const CardForumDetail: React.FC<TProps> = ({ id, content, createdAt, User, Anony
                 <TooltipTrigger asChild>
                   <Button variant='destructive' className='w-full space-x-2 lg:space-x-0'>
                     <AlertOctagon className='w-5 aspect-square' />
-                    <p className='lg:hidden'>Lapor Pedo</p>
+                    <p className='lg:hidden'>Laporin</p>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Lapor Pedo</p>
+                  <p>Laporin</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

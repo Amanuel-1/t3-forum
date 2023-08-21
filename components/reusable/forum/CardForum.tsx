@@ -102,7 +102,7 @@ const CardForum: React.FC<TProps> = ({ id, content, User, createdAt, Anonymous }
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Lapor Pedo</p>
+              <p>Laporin</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
