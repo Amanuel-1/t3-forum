@@ -79,9 +79,51 @@ export const postRouter = router({
       }, existingPost)
     }),
   byCategory: procedure
-    .input(z.enum(["1", "2"]))
+    .input(z.enum(["1", "2", "3"]))
     .query(async ({ ctx, input }) => {
       const categoryId = input
+
+      if(categoryId === "3") {
+        const existingReportedPost = await ctx.prisma.post.findMany({
+          where: {
+            isReported: true
+          },
+          select: {
+            id: true,
+            categoryId: true,
+            content: true,
+            createdAt: true,
+            User: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+                username: true
+              }
+            },
+            Anonymous: {
+              select: {
+                id: true,
+                username: true
+              }
+            }
+          },
+          orderBy: {
+            createdAt: 'desc'
+          }
+        })
+
+        if(!existingReportedPost.length) return apiResponse({
+          status: 404,
+          message: 'Gak ada postingan yang di report banh'
+        }, [])
+
+        return apiResponse({
+          status: 200,
+          message: 'Ada ni bre'
+        }, existingReportedPost)
+      }
+
       const existingPost = await ctx.prisma.post.findMany({
         where: {
           categoryId: +categoryId

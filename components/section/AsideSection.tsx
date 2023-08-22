@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Blinds, Bug, ChevronDown, Globe, LogOut, TrendingUp, User, VenetianMask } from 'lucide-react'
+import { AlertOctagon, ArrowLeftRight, Blinds, Bug, ChevronDown, Globe, LogOut, TrendingUp, User, VenetianMask } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { Separator } from '../ui/separator'
 import Link from 'next/link'
@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
 import { useAnonymousStore, usePostCategory } from '@/lib/store'
 import { TUser } from '@/lib/utils'
+import { Badge } from '../ui/badge'
 
 type TProps = {
   user: TUser,
@@ -97,23 +98,34 @@ const AsideSection: React.FC<TProps> = ({ setOpenMenu, openMenu, user }) => {
         <h2 className='text-lg font-bold'>Pengaturan</h2>
         <ul className='mt-2 space-y-2'>
           <li>
-            <Link href='/kelola/post' className={`flex items-center space-x-2 p-2 ${router.asPath === '/kelola/post' ? 'bg-secondary' : 'bg-white'} hover:bg-secondary rounded-md border`}>
+            <Link href='/kelola/post' className={`flex items-center space-x-2 p-2 ${router.asPath === '/kelola/post' ? 'bg-secondary border-primary' : 'bg-white'} hover:bg-secondary rounded-md border`}>
               <Blinds className='w-5 aspect-square' />
               <span className='text-md'>Kelola Postingan</span>
             </Link>
           </li>
           <li>
-            <Link href='/pengaturan/akun' className={`flex items-center space-x-2 p-2 ${router.asPath === '/pengaturan/akun' ? 'bg-secondary' : 'bg-white'} hover:bg-secondary rounded-md border`}>
+            <Link href='/pengaturan/akun' className={`flex items-center space-x-2 p-2 ${router.asPath === '/pengaturan/akun' ? 'bg-secondary border-primary' : 'bg-white'} hover:bg-secondary rounded-md border`}>
               <User className='w-5 aspect-square' />
               <span className='text-md'>Akun</span>
             </Link>
           </li>
           <li>
-            <Link href='/pengaturan/anonymous' className={`flex items-center space-x-2 p-2 ${router.asPath === '/pengaturan/anonymous' ? 'bg-secondary' : 'bg-white'} hover:bg-secondary rounded-md border`}>
+            <Link href='/pengaturan/anonymous' className={`flex items-center space-x-2 p-2 ${router.asPath === '/pengaturan/anonymous' ? 'bg-secondary border-primary' : 'bg-white'} hover:bg-secondary rounded-md border`}>
               <VenetianMask className='w-5 aspect-square' />
               <span className='text-md'>Anonymous</span>
             </Link>
           </li>
+          {user.username === 'adicss' && (
+            <li>
+              <Link href='/reported' className={`flex items-center space-x-2 p-2 ${router.asPath === '/reported' ? 'bg-secondary border-primary' : 'bg-white'} hover:bg-secondary rounded-md border`}>
+                <AlertOctagon className='w-5 aspect-square' />
+                <div className='flex items-start justify-between w-full'>
+                  <span className='text-md'>Reported Post</span>
+                  <Badge className='text-sm'>Dev</Badge>
+                </div>
+              </Link>
+            </li>
+          )}
         </ul>
 
       </div>

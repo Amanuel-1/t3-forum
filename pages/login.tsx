@@ -13,7 +13,6 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import Head from 'next/head'
-import { trimErrMessage } from '@/lib/utils'
 
 const formSchema = z.object({
   username: z.string().min(3, {

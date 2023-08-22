@@ -90,17 +90,18 @@ const EditPostForm: React.FC<TProps> = ({ userId, postId, username, content, isA
           </Alert>
         )}
 
-        <Button onClick={() => setAnonymousMode(!anonymousMode)} className='w-full lg:w-max space-x-2' variant='outline'>
-          <ArrowLeftRight className='w-4 aspect-square' />
-          <span className={`ml-1 font-bold ${anonymousMode ? 'text-red-600' : 'text-black'}`}>{anonymousMode ? 'Anonymous' : 'Public'} Post</span>
-        </Button>
-
-        {username === 'adicss' && (
-          <Button onClick={() => setCategoryId(categoryId === "1" ? "2" : "1")} className='w-full lg:w-max space-x-2 mt-2 lg:mt-0 lg:ml-2' variant='outline'>
+        <div className='flex flex-col lg:flex-row gap-2 items-start'>
+          <Button onClick={() => setAnonymousMode(!anonymousMode)} className='w-full lg:w-max space-x-2' variant='outline'>
             <ArrowLeftRight className='w-4 aspect-square' />
-            <span className={`ml-1 font-bold`}>{categoryId === "1" ? 'FYP' : 'Dev'} Post</span>
+            <span className={`ml-1 font-bold ${anonymousMode ? 'text-red-600' : 'text-black'}`}>{anonymousMode ? 'Anonymous' : 'Public'} Post</span>
           </Button>
-        )}
+
+          {username === 'adicss' && (
+            <Button onClick={() => setCategoryId(categoryId === "1" ? "2" : "1")} className='w-full lg:w-max lg:mt-0' variant='outline'>
+              <span className={`font-bold`}>{categoryId === "1" ? 'FYP' : 'Dev'} Post</span>
+            </Button>
+          )}
+        </div>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(submitHandler)} className="space-y-4 mt-4">
