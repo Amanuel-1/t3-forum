@@ -104,14 +104,14 @@ const ReportedPostCard: React.FC<TProps> = ({ id, content, createdAt, User, Anon
             ? (<Loader2 className='w-5 aspect-square animate-spin'/>)
             : (<Check className='w-5 aspect-square' />)
           }
-          <p>Aman Post Ini mah</p>
+          <p>Aman</p>
         </Button>
 
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button variant='destructive' className='space-x-2 grow md:grow-0'>
               <Trash className='w-5 aspect-square' />
-              <p>Takedown Postingan</p>
+              <p>Takedown</p>
             </Button>
           </AlertDialogTrigger>
 
