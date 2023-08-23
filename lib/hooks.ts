@@ -40,12 +40,18 @@ export const useReportPost = () => {
     reportPost: (postId: string) => reportPost(postId, {
       onSuccess: () => {
         setPostHasBeenReported(true)
+        setTimeout(() => {
+          setPostHasBeenReported(false)
+        }, 500)
       }
     }), 
     postIsSafety: (postId: string) => {
       postIsSafety(postId, {
-        onSuccess: (data) => {
+        onSuccess: () => {
           setPostHasNotBeenReported(true)
+          setTimeout(() => {
+            setPostHasNotBeenReported(false)
+          }, 500)
         },
       })
     },
