@@ -6,6 +6,7 @@ import { trpc } from '@/utils/trpc'
 import { Loader2, MoreHorizontal, Pencil, Send, Trash2, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import React, { useState } from 'react'
+import { useCurrentUserStore } from '@/lib/store'
 
 type TProps = {
   id: number,
@@ -65,6 +66,7 @@ const EditForm: React.FC<TPropsEditForm> = ({ commentId, commentText, setEditMod
 const CommentCard: React.FC<TProps> = ({ id, text, createdAt, User, setCommentHasBeenEdited, setCommentHasBeenDeleted }) => {
   const [editMode, setEditMode] = useState(false)
   const { mutate: deleteComment } = trpc.comment.delete.useMutation()
+  const { user: currentUser } = useCurrentUserStore(state => state)
 
   const getMeta = (createdAt: string) => {
     const formattedDate = new Date(createdAt)
@@ -104,23 +106,25 @@ const CommentCard: React.FC<TProps> = ({ id, text, createdAt, User, setCommentHa
               </div>
 
               <div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button className='scale-75' variant='outline'>
-                      <MoreHorizontal className='w-5 aspect-square' />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className='w-56' side='left' sideOffset={4}>
-                    <DropdownMenuItem onClick={() => setEditMode(true)} className='space-x-3 cursor-pointer'>
-                      <Pencil className='w-4 aspect-square' />
-                      <p>Edit Komentar</p>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={deleteHandler} className='space-x-3 focus:bg-destructive focus:text-white cursor-pointer'>
-                      <Trash2 className='w-4 aspect-square' />
-                      <p>Hapus Komentar</p>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                {User.username === currentUser?.username && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button className='scale-75' variant='outline'>
+                        <MoreHorizontal className='w-5 aspect-square' />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className='w-56' side='left' sideOffset={4}>
+                      <DropdownMenuItem onClick={() => setEditMode(true)} className='space-x-3 cursor-pointer'>
+                        <Pencil className='w-4 aspect-square' />
+                        <p>Edit Komentar</p>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={deleteHandler} className='space-x-3 focus:bg-destructive focus:text-white cursor-pointer'>
+                        <Trash2 className='w-4 aspect-square' />
+                        <p>Hapus Komentar</p>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </div>
 
             </div>

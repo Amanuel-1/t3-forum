@@ -1,5 +1,6 @@
-import { apiResponse } from "@/lib/utils"
+import { apiResponse, getAuthUser } from "@/lib/utils"
 import { procedure, router } from "@/server/trpc"
+import { getCookie } from "cookies-next"
 import { z } from "zod"
 
 export const commentRouter = router({
@@ -65,9 +66,19 @@ export const commentRouter = router({
       commentText: z.string()
     }))
     .mutation(async ({ ctx, input: { commentId, commentText } }) => {
+
+      const token = getCookie('token')
+      const user = await getAuthUser(token as string)
+
+      if(!user) return apiResponse({
+        status: 400,
+        message: 'Gagal mengedit komentar'
+      })
+
       const editedComment = await ctx.prisma.comment.update({
         where: {
-          id: commentId
+          id: commentId,
+          userId: user.id
         },
         data: {
           text: commentText
@@ -87,9 +98,19 @@ export const commentRouter = router({
   delete: procedure
     .input(z.number())
     .mutation(async ({ ctx, input: commentId }) => {
+
+      const token = getCookie('token')
+      const user = await getAuthUser(token as string)
+
+      if(!user) return apiResponse({
+        status: 400,
+        message: 'Gagal mengedit komentar'
+      })
+
       const deletedComment = await ctx.prisma.comment.delete({
         where: {
-          id: commentId
+          id: commentId,
+          userId: user.id
         }
       })
 

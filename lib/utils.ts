@@ -36,7 +36,9 @@ export function getJwtSecret(): string {
   return JWT_SECRET
 }
 
-export const getAuthUser = async (token: string) => {
+export const getAuthUser = async (token?: string) => {
+  if(!token) return null
+
   const payload = await jwtVerify(token, new TextEncoder().encode(getJwtSecret()))
     .then(decoded => decoded.payload as User)
     .catch(err => null)
