@@ -10,6 +10,7 @@ import { useAnonymousStore, usePostCategory } from '@/lib/store'
 import { Skeleton } from '@/components/ui/skeleton'
 import CardForum from '@/components/reusable/forum/CardForum'
 import Loading from '@/components/reusable/skeleton/Loading'
+import Empty from '@/components/reusable/skeleton/Empty'
 
 const CardSkeleton = () => {
   return (
@@ -48,12 +49,12 @@ const Forum: NextPage<TProps> = ({ user }) => {
   
   const { categoryId } = usePostCategory(state => state)
 
-  const posts = trpc.post.byCategory.useQuery(categoryId)
+  const { data: postResponse, refetch: postRefetch } = trpc.post.byCategory.useQuery(categoryId)
 
   useEffect(() => {
-    posts.refetch()
-    if (!openCreatePostInput) posts.refetch()
-  }, [openCreatePostInput, posts, categoryId])
+    postRefetch()
+    if (!openCreatePostInput) postRefetch()
+  }, [openCreatePostInput, postResponse, categoryId])
 
   return (
     <>
@@ -81,21 +82,15 @@ const Forum: NextPage<TProps> = ({ user }) => {
         </div>
 
         <ul className='py-4 pb-20 space-y-4 container'>
-          {
-            posts.data?.status === 404
-              ? (
-                <li className='py-2 px-4 text-primary bg-secondary w-max rounded'>Kosong Bang</li>
-              )
-              : (
-                <Loading data={posts.data?.data} skeletonFallback={<CardSkeleton />}>
-                  {posts.data?.data?.map((post, idx) => (
-                    <li key={idx}>
-                      <CardForum {...post} />
-                    </li>
-                  ))}
-                </Loading>
-              )
-          }
+          <Loading data={postResponse?.data} skeletonFallback={<CardSkeleton />}>
+            <Empty data={postResponse?.data} emptyFallback={<li className='p-3 text-primary bg-secondary w-max rounded'>{postResponse?.message}</li>}>
+                {postResponse?.data?.map((post, idx) => (
+                  <li key={idx}>
+                    <CardForum {...post} />
+                  </li>
+                ))}
+            </Empty>
+          </Loading>
         </ul>
       </Layout>
     </>

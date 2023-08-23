@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useCurrentUserStore } from "./store"
 import { trpc } from "@/utils/trpc"
 
@@ -26,5 +26,32 @@ export const useUser = (user: TUser) => {
   return {
     user: currentUser ?? user,
     setUser
+  }
+}
+
+export const useReportPost = () => {
+  const [postHasBeenReported, setPostHasBeenReported] = useState(false)
+  const [postHasNotBeenReported, setPostHasNotBeenReported] = useState(false)
+
+  const { mutate: reportPost, isLoading: reportPostLoading } = trpc.post.reportPost.useMutation()
+  const { mutate: postIsSafety, isLoading: safetyPostLoading } = trpc.post.postIsSafety.useMutation()
+
+  return {
+    reportPost: (postId: string) => reportPost(postId, {
+      onSuccess: () => {
+        setPostHasBeenReported(true)
+      }
+    }), 
+    postIsSafety: (postId: string) => {
+      postIsSafety(postId, {
+        onSuccess: (data) => {
+          setPostHasNotBeenReported(true)
+        },
+      })
+    },
+    postHasBeenReported,
+    postHasNotBeenReported,
+    reportPostLoading,
+    safetyPostLoading
   }
 }

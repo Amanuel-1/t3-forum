@@ -1,3 +1,4 @@
+import { Toaster } from '@/components/ui/toaster'
 import '@/styles/globals.css'
 import { trpc } from '@/utils/trpc'
 import { Loader2 } from 'lucide-react'
@@ -32,6 +33,7 @@ const App: AppType = ({ Component, pageProps }) => {
         <p>Tar dulu bentar..</p>
       </div>
       <Component {...pageProps} />
+      <Toaster/>
     </>
   )
 }

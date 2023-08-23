@@ -3,9 +3,11 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { AlertOctagon, Forward, MessagesSquare } from 'lucide-react'
+import { useToast } from '@/components/ui/use-toast'
+import { useReportPost } from '@/lib/hooks'
+import { AlertOctagon, Forward, Loader2, MessagesSquare } from 'lucide-react'
 import { useRouter } from 'next/router'
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 type TProps = {
   id: string,
@@ -25,6 +27,9 @@ type TProps = {
 
 const CardForum: React.FC<TProps> = ({ id, content, User, createdAt, Anonymous }) => {
   const router = useRouter()
+  const { toast } = useToast()
+
+  const toastTriggerRef = useRef<HTMLButtonElement | null>(null)
 
   const getMeta = (createdAt: string) => {
     const formattedDate = new Date(createdAt)
@@ -38,8 +43,21 @@ const CardForum: React.FC<TProps> = ({ id, content, User, createdAt, Anonymous }
     return formattedDate.join('')
   }
 
+  const { reportPost, postHasBeenReported, reportPostLoading } = useReportPost()
+
+  useEffect(() => {
+    if(postHasBeenReported && toastTriggerRef.current) {
+      toastTriggerRef.current.click()
+    }
+  }, [postHasBeenReported, toastTriggerRef])
+
   return (
     <Card>
+      <Button ref={toastTriggerRef} onClick={() => toast({
+        title: 'Notifikasi',
+        description: 'Makasih bre laporan nya, Ntar gw cek deh',
+      })} className='hidden'>{''}</Button>
+
       <CardHeader className='px-4 py-2'>
 
         <CardTitle onClick={() => {
@@ -97,8 +115,12 @@ const CardForum: React.FC<TProps> = ({ id, content, User, createdAt, Anonymous }
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant='destructive'>
-                <AlertOctagon className='w-5 aspect-square' />
+              <Button disabled={reportPostLoading} onClick={() => reportPost(id)} variant='destructive'>
+                {
+                  reportPostLoading 
+                  ? (<Loader2 className='mr-2 h-4 w-4 animate-spin'/>)
+                  : (<AlertOctagon className='w-5 aspect-square' />)
+                }
               </Button>
             </TooltipTrigger>
             <TooltipContent>

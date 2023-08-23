@@ -80,8 +80,7 @@ export const postRouter = router({
     }),
   byCategory: procedure
     .input(z.enum(["1", "2", "3"]))
-    .query(async ({ ctx, input }) => {
-      const categoryId = input
+    .query(async ({ ctx, input: categoryId }) => {
 
       if(categoryId === "3") {
         const existingReportedPost = await ctx.prisma.post.findMany({
@@ -153,9 +152,9 @@ export const postRouter = router({
         }
       })
 
-      if (!existingPost) return apiResponse({
+      if (!existingPost.length) return apiResponse({
         status: 404,
-        message: 'Duh g ada bre'
+        message: 'Belum ada postingan'
       }, [])
 
       return apiResponse({
@@ -477,5 +476,50 @@ export const postRouter = router({
         status: 200,
         message: 'Berhasil meng-delete postingan lu'
       }, deletedPost)
+    }),
+  reportPost: procedure
+    .input(z.string())
+    .mutation(async ({ ctx, input: postId }) => {
+      const reportedPost = await ctx.prisma.post.update({
+        where: {
+          id: postId
+        },
+        data: {
+          isReported: true
+        }
+      })
+
+      if(!reportedPost) return apiResponse({
+        status: 400,
+        message: 'Gagal melaporkan postingan'
+      })
+
+      return apiResponse({
+        status: 200,
+        message: 'Makasih bre udah nge laporin :)'
+      }, reportedPost)
+    }),
+  postIsSafety: procedure
+    .input(z.string())
+    .mutation(async ({ ctx, input: postId }) => {
+      const updatedPost = await ctx.prisma.post.update({
+        where: {
+          id: postId
+        },
+        data: {
+          isReported: false
+        }
+      })
+
+      if(!updatedPost) return apiResponse({
+
+        status: 400,
+        message: 'Duh gk bisa bre, Cek lagi deh'
+      })
+
+      return apiResponse({
+        status: 200,
+        message: 'Ok udah aman berarti ya'
+      })
     })
 })

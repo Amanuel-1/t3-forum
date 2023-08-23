@@ -106,7 +106,6 @@ const CardForum: React.FC<TProps> = ({ id, content, categoryId, User, createdAt,
           </Tooltip>
         </TooltipProvider>
 
-
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button variant='destructive'>

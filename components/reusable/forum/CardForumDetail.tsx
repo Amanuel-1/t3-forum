@@ -4,11 +4,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { useToast } from '@/components/ui/use-toast'
+import { useReportPost } from '@/lib/hooks'
 import { TUser } from '@/lib/utils'
 import { trpc } from '@/utils/trpc'
 import { AlertOctagon, Forward, Loader2, Send } from 'lucide-react'
 import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 type TProps = {
   id: string,
@@ -36,6 +38,10 @@ const CardForumDetail: React.FC<TProps> = ({ id, content, createdAt, User, Anony
 
   const { mutate: insertNewComment, isLoading } = trpc.comment.store.useMutation()
 
+  const { toast } = useToast()
+
+  const toastTriggerRef = useRef<HTMLButtonElement | null>(null)
+
   const getMeta = (createdAt: string) => {
     const formattedDate = new Date(createdAt)
       .toLocaleString('id')
@@ -48,9 +54,14 @@ const CardForumDetail: React.FC<TProps> = ({ id, content, createdAt, User, Anony
     return formattedDate.join('')
   }
 
+  const { reportPost, postHasBeenReported, reportPostLoading } = useReportPost()
+
   useEffect(() => {
     console.log(response)
-  }, [response])
+    if(postHasBeenReported && toastTriggerRef.current) {
+      toastTriggerRef.current.click()
+    }
+  }, [response, postHasBeenReported, toastTriggerRef])
 
   const submitHandler: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
@@ -69,6 +80,11 @@ const CardForumDetail: React.FC<TProps> = ({ id, content, createdAt, User, Anony
 
   return (
     <Card>
+
+      <Button ref={toastTriggerRef} onClick={() => toast({
+        title: 'Notifikasi',
+        description: 'Makasih bre laporan nya, Ntar gw cek deh',
+      })} className='hidden'>{''}</Button>
       <CardHeader className='px-4 py-2' onClick={() => router.push('/profil/' + User?.username)}>
 
         <CardTitle className={`${Anonymous ? 'cursor-default' : 'cursor-pointer'} flex items-center gap-4`}>
@@ -116,8 +132,12 @@ const CardForumDetail: React.FC<TProps> = ({ id, content, createdAt, User, Anony
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant='destructive' className='w-full space-x-2 lg:space-x-0'>
-                    <AlertOctagon className='w-5 aspect-square' />
+                  <Button disabled={reportPostLoading} variant='destructive' className='w-full space-x-2 lg:space-x-0' onClick={() => reportPost(id)}>
+                    {
+                      reportPostLoading
+                      ? (<Loader2 className='w-5 aspect-square animate-spin'/>)
+                      : (<AlertOctagon className='w-5 aspect-square' />)
+                    }
                     <p className='lg:hidden'>Laporin</p>
                   </Button>
                 </TooltipTrigger>

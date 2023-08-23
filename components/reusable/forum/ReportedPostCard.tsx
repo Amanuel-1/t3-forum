@@ -1,7 +1,14 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Separator } from '@/components/ui/separator'
+import { Check, Loader2, Trash } from 'lucide-react'
 import { useRouter } from 'next/router'
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
+import { useReportPost } from '@/lib/hooks'
+import { useToast } from '@/components/ui/use-toast'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
+import { trpc } from '@/utils/trpc'
 
 type TProps = {
   id: string,
@@ -16,11 +23,17 @@ type TProps = {
   Anonymous?: {
     username: string
     id: string
-  } | null
+  } | null,
+  setPostHasNotBeenReported: (value: React.SetStateAction<boolean>) => void
 }
 
-const ReportedPostCard: React.FC<TProps> = ({ id, content, createdAt, User, Anonymous }) => {
+const ReportedPostCard: React.FC<TProps> = ({ id, content, createdAt, User, Anonymous, setPostHasNotBeenReported }) => {
   const router = useRouter()
+  const { toast } = useToast()
+  const toastTriggerRef = useRef<HTMLButtonElement | null>(null)
+
+  const { postIsSafety, safetyPostLoading, postHasNotBeenReported } = useReportPost()
+  const { mutate: deletePost } = trpc.post.delete.useMutation()
 
   const getMeta = (createdAt: string) => {
     const formattedDate = new Date(createdAt)
@@ -34,16 +47,37 @@ const ReportedPostCard: React.FC<TProps> = ({ id, content, createdAt, User, Anon
     return formattedDate.join('')
   }
 
+  const deletePostHandler = () => {
+    deletePost(id, {
+      onSuccess: (data) => {
+        console.log(data)
+        setPostHasNotBeenReported(true)
+      }
+    })
+  }
+
+  useEffect(() => {
+    if(postHasNotBeenReported && toastTriggerRef.current) {
+      toastTriggerRef.current.click()
+      setPostHasNotBeenReported(true)
+    }
+  }, [postHasNotBeenReported, toastTriggerRef])
+
   return (
     <Card>
       <CardHeader className='px-4 py-2'>
+
+        <Button ref={toastTriggerRef} className='hidden' onClick={() => toast({
+          title: 'Notifikasi',
+          description: 'Ok berarti aman yah bre'
+        })}>{''}</Button>
 
         <CardTitle onClick={() => {
           if (!Anonymous) router.push('/profil/' + User?.username)
         }} className={`${Anonymous ? 'cursor-default' : 'cursor-pointer'} flex items-center gap-4`}>
 
           <Avatar>
-            <AvatarImage src={User?.image ?? ''} alt="@shadcn" />
+            <AvatarImage src={User?.image ?? ''} alt="@shadcn"/>
             <AvatarFallback>{User ? User.username[0].toUpperCase() : Anonymous ? Anonymous.username[3].toUpperCase() : 'K'}</AvatarFallback>
           </Avatar>
           <div>
@@ -61,6 +95,42 @@ const ReportedPostCard: React.FC<TProps> = ({ id, content, createdAt, User, Anon
       <CardContent className='px-4 py-2'>
         <p>{content}</p>
       </CardContent>
+      <Separator />
+      <CardFooter className='p-2 gap-2 flex'>
+
+        <Button disabled={safetyPostLoading} variant='default' onClick={() => postIsSafety(id)} className='space-x-2 grow md:grow-0'>
+          {
+            safetyPostLoading 
+            ? (<Loader2 className='w-5 aspect-square animate-spin'/>)
+            : (<Check className='w-5 aspect-square' />)
+          }
+          <p>Aman Post Ini mah</p>
+        </Button>
+
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant='destructive' className='space-x-2 grow md:grow-0'>
+              <Trash className='w-5 aspect-square' />
+              <p>Takedown Postingan</p>
+            </Button>
+          </AlertDialogTrigger>
+
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Takedown Postingan ?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Kalo dah ke takedown g bisa di back up lagi bre
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Gk Jadi</AlertDialogCancel>
+              <AlertDialogAction onClick={deletePostHandler}>Yaudh Sih</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+
+        </AlertDialog>
+
+      </CardFooter>
     </Card>
   )
 }
