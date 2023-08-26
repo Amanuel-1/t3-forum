@@ -18,4 +18,3 @@
 - [x] Event route change (redirect feedback for UX)
 - [x] Crud Post
 - [x] Edit Profil
-- [ ] bug: bisa upload pp duplikat (uploadthing gw penuh bjir)
